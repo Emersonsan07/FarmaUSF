@@ -3399,7 +3399,9 @@ function doGet(e) {
                 <!-- Aviso de privacidade -->
                 <div class="sheets-privacy-note">
                     <i data-lucide="lock"></i>
-                    <p><strong>Privacidade:</strong> Os dados são enviados diretamente da sua máquina para a sua planilha privada via HTTPS. Nenhum servidor intermediário tem acesso às informações dos pacientes.</p>
+                    <p><strong>Privacidade:</strong> Os dados são enviados diretamente da sua máquina para a sua
+                        planilha privada via HTTPS. Nenhum servidor intermediário tem acesso às informações dos
+                        pacientes.</p>
                 </div>
             </div>
 
@@ -3420,16 +3422,19 @@ function doGet(e) {
             <!-- Modal Header (hidden on print) -->
             <div class="sheets-modal-header modal-print-actions-top" style="padding: 16px 20px;">
                 <div class="sheets-modal-title" style="display:flex;align-items:center;gap:12px;">
-                    <div style="width:40px;height:40px;background:linear-gradient(135deg,#0284c7,#0d9488);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <div
+                        style="width:40px;height:40px;background:linear-gradient(135deg,#0284c7,#0d9488);border-radius:10px;display:flex;align-items:center;justify-content:center;">
                         <i data-lucide="pill" style="width:20px;height:20px;color:white;"></i>
                     </div>
                     <div>
                         <h3 style="font-size:15px;margin:0;">Plano Posológico Visual</h3>
-                        <p style="font-size:11px;color:#64748b;margin:0;">Documento acessível para o paciente · Impressão A4</p>
+                        <p style="font-size:11px;color:#64748b;margin:0;">Documento acessível para o paciente ·
+                            Impressão A4</p>
                     </div>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <button class="btn btn-secondary btn-sm" id="btn-poso-whatsapp" type="button" style="background:#25d366;color:white;border-color:#25d366;gap:6px;">
+                    <button class="btn btn-secondary btn-sm" id="btn-poso-whatsapp" type="button"
+                        style="background:#25d366;color:white;border-color:#25d366;gap:6px;">
                         <i data-lucide="message-circle" style="width:14px;height:14px;"></i> Enviar WhatsApp
                     </button>
                     <button class="btn btn-primary btn-sm" onclick="window.print()" type="button">
@@ -3442,18 +3447,25 @@ function doGet(e) {
             </div>
 
             <!-- Horários Customizáveis (hidden on print) -->
-            <div class="poso-custom-times modal-print-actions-top" style="background:#f1f5f9;border-bottom:1px solid #e2e8f0;padding:10px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                <span style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">⏰ Personalizar Horários:</span>
+            <div class="poso-custom-times modal-print-actions-top"
+                style="background:#f1f5f9;border-bottom:1px solid #e2e8f0;padding:10px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                <span
+                    style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">⏰
+                    Personalizar Horários:</span>
                 <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#0369a1;">
-                    ☀️ Manhã: <input type="time" id="poso-hora-manha" value="07:00" style="padding:3px 6px;border:1px solid #bae6fd;border-radius:6px;font-size:12px;background:#fff;color:#0369a1;font-weight:700;">
+                    ☀️ Manhã: <input type="time" id="poso-hora-manha" value="07:00"
+                        style="padding:3px 6px;border:1px solid #bae6fd;border-radius:6px;font-size:12px;background:#fff;color:#0369a1;font-weight:700;">
                 </label>
                 <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#c2410c;">
-                    🌤️ Tarde: <input type="time" id="poso-hora-tarde" value="12:00" style="padding:3px 6px;border:1px solid #fed7aa;border-radius:6px;font-size:12px;background:#fff;color:#c2410c;font-weight:700;">
+                    🌤️ Tarde: <input type="time" id="poso-hora-tarde" value="12:00"
+                        style="padding:3px 6px;border:1px solid #fed7aa;border-radius:6px;font-size:12px;background:#fff;color:#c2410c;font-weight:700;">
                 </label>
                 <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#1e40af;">
-                    🌙 Noite: <input type="time" id="poso-hora-noite" value="19:00" style="padding:3px 6px;border:1px solid #bfdbfe;border-radius:6px;font-size:12px;background:#fff;color:#1e40af;font-weight:700;">
+                    🌙 Noite: <input type="time" id="poso-hora-noite" value="19:00"
+                        style="padding:3px 6px;border:1px solid #bfdbfe;border-radius:6px;font-size:12px;background:#fff;color:#1e40af;font-weight:700;">
                 </label>
-                <button type="button" onclick="atualizarHorariosPlano()" class="btn btn-sm" style="padding:4px 10px;font-size:11px;background:#0284c7;color:white;border-radius:6px;font-weight:700;">Atualizar</button>
+                <button type="button" onclick="atualizarHorariosPlano()" class="btn btn-sm"
+                    style="padding:4px 10px;font-size:11px;background:#0284c7;color:white;border-radius:6px;font-weight:700;">Atualizar</button>
             </div>
 
             <!-- Modal Body / Printable Area -->
@@ -3466,7 +3478,8 @@ function doGet(e) {
                             <div class="poso-logo-badge">USF</div>
                             <div>
                                 <h1 class="poso-title">PLANO POSOLÓGICO VISUAL DE MEDICAMENTOS</h1>
-                                <p class="poso-subtitle">Residência Multiprofissional em Saúde da Família — UEMS / SESAU-MS</p>
+                                <p class="poso-subtitle">Residência Multiprofissional em Saúde da Família — UEMS /
+                                    SESAU-MS</p>
                             </div>
                         </div>
                         <div class="poso-header-meta">
@@ -3479,10 +3492,12 @@ function doGet(e) {
                     <!-- Patient Bar -->
                     <div class="poso-patient-bar">
                         <div class="poso-patient-info">
-                            <span><strong>Paciente:</strong> <strong id="poso-paciente-nome" class="poso-highlight-name">--</strong></span>
+                            <span><strong>Paciente:</strong> <strong id="poso-paciente-nome"
+                                    class="poso-highlight-name">--</strong></span>
                             <span><strong>Idade:</strong> <span id="poso-paciente-idade">--</span> anos</span>
                             <span><strong>Sexo:</strong> <span id="poso-paciente-sexo">--</span></span>
-                            <span><strong>Total de medicamentos:</strong> <span id="poso-total-meds" style="font-weight:800;color:#bae6fd;">--</span></span>
+                            <span><strong>Total de medicamentos:</strong> <span id="poso-total-meds"
+                                    style="font-weight:800;color:#bae6fd;">--</span></span>
                         </div>
                     </div>
 
@@ -3530,29 +3545,40 @@ function doGet(e) {
                     </div>
 
                     <!-- Alertas Importantes (preenchido via JS se houver Beers/PRM) -->
-                    <div id="poso-alerts-box" style="display:none;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;padding:12px 14px;margin-bottom:14px;">
-                        <h4 style="font-size:12px;font-weight:700;color:#be123c;margin:0 0 6px 0;display:flex;align-items:center;gap:6px;">
+                    <div id="poso-alerts-box"
+                        style="display:none;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+                        <h4
+                            style="font-size:12px;font-weight:700;color:#be123c;margin:0 0 6px 0;display:flex;align-items:center;gap:6px;">
                             ⚠️ Alertas Especiais para Este Plano:
                         </h4>
-                        <ul id="poso-alerts-list" style="margin:0;padding-left:18px;font-size:11px;color:#9f1239;line-height:1.6;"></ul>
+                        <ul id="poso-alerts-list"
+                            style="margin:0;padding-left:18px;font-size:11px;color:#9f1239;line-height:1.6;"></ul>
                     </div>
 
                     <!-- Important Guidelines Footer Box -->
                     <div class="poso-guidelines-box">
                         <h4><i data-lucide="info"></i> Orientações Importantes para a sua Saúde:</h4>
                         <ul>
-                            <li><strong>Horários regulares:</strong> Tome seus medicamentos sempre nos horários indicados para garantir a eficácia do tratamento.</li>
-                            <li><strong>Em caso de esquecimento:</strong> Tome assim que lembrar. Se estiver perto da próxima dose, <strong>não tome em dobro.</strong></li>
-                            <li><strong>Armazenamento correto:</strong> Guarde em local seco, fresco e protegido da luz. Evite banheiro e cozinha.</li>
-                            <li><strong>Não interrompa sem avisar:</strong> Não suspenda nenhum medicamento por conta própria. Consulte o farmacêutico ou médico.</li>
-                            <li><strong>Dúvidas ou mal-estar:</strong> Procure a equipe da USF antes de fazer qualquer alteração no tratamento.</li>
+                            <li><strong>Horários regulares:</strong> Tome seus medicamentos sempre nos horários
+                                indicados para garantir a eficácia do tratamento.</li>
+                            <li><strong>Em caso de esquecimento:</strong> Tome assim que lembrar. Se estiver perto da
+                                próxima dose, <strong>não tome em dobro.</strong></li>
+                            <li><strong>Armazenamento correto:</strong> Guarde em local seco, fresco e protegido da luz.
+                                Evite banheiro e cozinha.</li>
+                            <li><strong>Não interrompa sem avisar:</strong> Não suspenda nenhum medicamento por conta
+                                própria. Consulte o farmacêutico ou médico.</li>
+                            <li><strong>Dúvidas ou mal-estar:</strong> Procure a equipe da USF antes de fazer qualquer
+                                alteração no tratamento.</li>
                         </ul>
                     </div>
 
                     <!-- Pictograma de Forma Farmacêutica -->
-                    <div id="poso-pictogram-bar" style="display:none; margin-bottom:16px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 14px;">
-                        <h4 style="font-size:11px;font-weight:700;color:#15803d;margin:0 0 8px 0;">🗒️ Legenda — Como identificar seu medicamento:</h4>
-                        <div id="poso-pictogram-content" style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#166534;"></div>
+                    <div id="poso-pictogram-bar"
+                        style="display:none; margin-bottom:16px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 14px;">
+                        <h4 style="font-size:11px;font-weight:700;color:#15803d;margin:0 0 8px 0;">🗒️ Legenda — Como
+                            identificar seu medicamento:</h4>
+                        <div id="poso-pictogram-content"
+                            style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#166534;"></div>
                     </div>
 
                     <!-- Signatures & Contact -->
@@ -3565,23 +3591,28 @@ function doGet(e) {
                         <div class="poso-sig-block">
                             <div class="poso-sig-line"></div>
                             <p><strong>Paciente ou Responsável</strong></p>
-                            <small>Recebi as orientações de uso — <span id="poso-data-assinatura">__/__/____</span></small>
+                            <small>Recebi as orientações de uso — <span
+                                    id="poso-data-assinatura">__/__/____</span></small>
                         </div>
                     </div>
 
                     <!-- Rodapé informativo -->
-                    <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #cbd5e1;font-size:9px;color:#94a3b8;text-align:center;">
-                        Documento gerado pelo sistema FarmaUSF — Plataforma de Cuidado Farmacêutico &amp; Apoio Decisório · UEMS/SESAU-MS
+                    <div
+                        style="margin-top:12px;padding-top:10px;border-top:1px dashed #cbd5e1;font-size:9px;color:#94a3b8;text-align:center;">
+                        Documento gerado pelo sistema FarmaUSF — Plataforma de Cuidado Farmacêutico &amp; Apoio
+                        Decisório · UEMS/SESAU-MS
                         &nbsp;|&nbsp; Em caso de dúvidas, procure a farmácia da sua USF.
                     </div>
                 </div>
             </div>
 
             <!-- Modal Footer (hidden on print) -->
-            <div class="sheets-modal-footer modal-print-actions" style="padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <div class="sheets-modal-footer modal-print-actions"
+                style="padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
                 <button class="btn btn-secondary" id="btn-posologia-fechar" type="button">Fechar</button>
                 <div style="display:flex;gap:8px;">
-                    <button class="btn btn-sm" id="btn-poso-whatsapp-footer" type="button" style="background:#25d366;color:white;border-color:#25d366;gap:6px;display:inline-flex;align-items:center;">
+                    <button class="btn btn-sm" id="btn-poso-whatsapp-footer" type="button"
+                        style="background:#25d366;color:white;border-color:#25d366;gap:6px;display:inline-flex;align-items:center;">
                         <i data-lucide="message-circle" style="width:14px;height:14px;"></i> Enviar WhatsApp
                     </button>
                     <button class="btn btn-primary" onclick="window.print()" type="button">
@@ -3660,7 +3691,8 @@ function doGet(e) {
                 <div id="auth-step-register" style="display: none;">
                     <div
                         style="background: var(--bg-tertiary); padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
-                        <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">CPF Identificado:</span>
+                        <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">CPF
+                            Identificado:</span>
                         <input type="text" id="auth-register-cpf-display" disabled readonly
                             style="background: transparent; border: none; font-weight: 800; color: var(--color-primary); font-size: 13px; text-align: right; width: 130px;">
                         <input type="hidden" id="auth-reg-cpf-hidden">
@@ -3670,7 +3702,8 @@ function doGet(e) {
                     <div style="margin-bottom: 16px;">
                         <label for="auth-reg-code"
                             style="font-weight: 700; font-size: 12px; margin-bottom: 6px; display: block; color: var(--text-primary);">
-                            1. Digite seu Código de Acesso Privado / Token Individual <span style="color: var(--danger-color);">*</span>
+                            1. Digite seu Código de Acesso Privado / Token Individual <span
+                                style="color: var(--danger-color);">*</span>
                         </label>
                         <div style="display: flex; gap: 8px;">
                             <input type="text" id="auth-reg-code" class="slot-input"
@@ -3678,13 +3711,15 @@ function doGet(e) {
                                 style="font-size: 13px; font-weight: 700; text-align: left; padding: 10px; flex: 1; text-transform: uppercase;"
                                 required>
                             <button type="button" class="btn btn-secondary" id="auth-btn-validate-code"
-                                onclick="USFAuth.verifyAndApplyCode()" style="padding: 0 16px; font-size: 12px; whitespace: nowrap;">
+                                onclick="USFAuth.verifyAndApplyCode()"
+                                style="padding: 0 16px; font-size: 12px; white-space: nowrap;">
                                 Validar Token
                             </button>
                         </div>
                         <small id="auth-code-hint-text"
                             style="color: var(--text-tertiary); font-size: 11px; margin-top: 6px; display: block; line-height: 1.4;">
-                            Informe o código privado fornecido individualmente. O token gerará automaticamente a sua categoria.
+                            Informe o código privado fornecido individualmente. O token gerará automaticamente a sua
+                            categoria.
                         </small>
                     </div>
 
@@ -3692,11 +3727,15 @@ function doGet(e) {
                     <div id="auth-detected-category-card"
                         style="display: none; background: rgba(13, 148, 136, 0.1); border: 1px solid rgba(13, 148, 136, 0.3); padding: 12px 14px; border-radius: var(--radius-md); margin-bottom: 16px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <i data-lucide="check-circle-2" style="color: var(--color-primary); width: 20px; height: 20px; flex-shrink: 0;"></i>
+                            <i data-lucide="check-circle-2"
+                                style="color: var(--color-primary); width: 20px; height: 20px; flex-shrink: 0;"></i>
                             <div>
-                                <strong style="font-size: 12px; color: var(--text-primary); display: block;">Código Privado Autorizado!</strong>
-                                <span style="font-size: 12px; color: var(--text-secondary);">Categoria Atribuída: </span>
-                                <span id="auth-detected-cargo-label" style="font-size: 12px; font-weight: 800; color: var(--color-primary);">--</span>
+                                <strong style="font-size: 12px; color: var(--text-primary); display: block;">Código
+                                    Privado Autorizado!</strong>
+                                <span style="font-size: 12px; color: var(--text-secondary);">Categoria Atribuída:
+                                </span>
+                                <span id="auth-detected-cargo-label"
+                                    style="font-size: 12px; font-weight: 800; color: var(--color-primary);">--</span>
                             </div>
                         </div>
                     </div>
@@ -3720,7 +3759,8 @@ function doGet(e) {
                                     Cargo Gerado pelo Código
                                 </label>
                                 <select id="auth-reg-cargo" class="slot-input"
-                                    style="font-size: 12px; padding: 10px; text-align: left; width: 100%; background: var(--bg-tertiary); font-weight: 700; pointer-events: none;" readonly>
+                                    style="font-size: 12px; padding: 10px; text-align: left; width: 100%; background: var(--bg-tertiary); font-weight: 700; pointer-events: none;"
+                                    readonly>
                                     <option value="Farmacêutico(a)">Farmacêutico(a)</option>
                                     <option value="Médico(a)">Médico(a)</option>
                                     <option value="Enfermeiro(a)">Enfermeiro(a)</option>
