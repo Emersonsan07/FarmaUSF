@@ -1,0 +1,1737 @@
+/* ================================================================
+   3. CONSULTA SOAP, PLANO POSOLÓGICO VISUAL, IMPRESSÃO E GOOGLE SHEETS MODAL
+   ================================================================ */
+
+/* SOAP WIZARD INTEGRADO */
+.soap-wizard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.wizard-steps-nav {
+    display: flex;
+    align-items: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 16px 24px;
+    gap: 0;
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+}
+
+.wizard-step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+    min-width: 72px;
+    transition: var(--transition);
+    opacity: 0.5;
+}
+
+.wizard-step-item.active,
+.wizard-step-item.done {
+    opacity: 1;
+}
+
+.wizard-step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background: var(--bg-tertiary);
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    transition: var(--transition);
+}
+
+.wizard-step-circle i {
+    width: 14px;
+    height: 14px;
+}
+
+.wizard-step-item.active .wizard-step-circle {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: white;
+    box-shadow: 0 0 0 4px var(--color-primary-light);
+}
+
+.wizard-step-item.done .wizard-step-circle {
+    border-color: var(--success-color);
+    background: var(--success-color);
+    color: white;
+}
+
+.wizard-step-item span {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.wizard-step-item.active span,
+.wizard-step-item.done span {
+    color: var(--text-primary);
+}
+
+.wizard-connector {
+    flex: 1;
+    height: 2px;
+    background: var(--border-color);
+    margin-bottom: 22px;
+    min-width: 16px;
+    transition: background 0.4s ease;
+}
+
+.wizard-connector.done {
+    background: var(--success-color);
+}
+
+.wizard-main-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;
+}
+
+.wizard-panel {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.wizard-panel.active {
+    display: flex;
+    animation: wizardSlideIn 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wizard-panel.going-back {
+    animation: wizardSlideBack 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes wizardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes wizardSlideBack {
+    from {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.wizard-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.wizard-panel-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.wizard-panel-icon i {
+    width: 20px;
+    height: 20px;
+}
+
+.wizard-panel-header h3 {
+    font-size: 17px;
+    margin-bottom: 2px;
+}
+
+.wizard-panel-header p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.wizard-card {
+    padding: 20px;
+}
+
+.wizard-sub-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.wizard-sub-title i {
+    width: 14px;
+    height: 14px;
+    color: var(--color-primary);
+}
+
+.step-summary-chip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--color-primary-light);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(13, 148, 136, 0.2);
+    font-size: 12px;
+    color: var(--color-primary-dark);
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+.step-summary-chip:empty {
+    display: none;
+}
+
+body.dark-theme .step-summary-chip {
+    color: var(--color-primary);
+}
+
+.chip-sep {
+    color: var(--border-color);
+    font-weight: 300;
+}
+
+.wizard-step-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0 4px;
+    gap: 10px;
+}
+
+.wizard-btn-prev,
+.wizard-btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wizard-error-msg {
+    background: var(--danger-bg);
+    border: 1px solid rgba(225, 29, 72, 0.3);
+    color: var(--danger-color);
+    border-radius: var(--radius-md);
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+
+.wizard-error-msg.show {
+    display: flex;
+}
+
+.wizard-error-msg i {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.imc-badge-inline {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    min-height: 42px;
+    gap: 1px;
+    transition: all 0.3s ease;
+}
+
+#imc-valor-inline {
+    font-size: 15px;
+    font-weight: 800;
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+}
+
+.imc-class-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--text-tertiary);
+}
+
+.imc-badge-inline.imc-ok {
+    border-color: var(--success-color);
+}
+
+.imc-badge-inline.imc-ok .imc-class-label {
+    color: var(--success-color);
+}
+
+.imc-badge-inline.imc-warn {
+    border-color: var(--warning-color);
+}
+
+.imc-badge-inline.imc-warn .imc-class-label {
+    color: var(--warning-color);
+}
+
+.imc-badge-inline.imc-danger {
+    border-color: var(--danger-color);
+}
+
+.imc-badge-inline.imc-danger .imc-class-label {
+    color: var(--danger-color);
+}
+
+.vitals-badge {
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    font-size: 11px;
+    font-weight: 700;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.3;
+    transition: all 0.3s ease;
+}
+
+.vitals-badge-neutral {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-tertiary);
+}
+
+.vitals-badge-ok {
+    background: var(--success-bg);
+    border: 1px solid var(--success-color);
+    color: var(--success-color);
+}
+
+.vitals-badge-warning {
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-color);
+    color: var(--warning-color);
+}
+
+.vitals-badge-danger {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+}
+
+.required-mark {
+    color: var(--danger-color);
+    margin-left: 2px;
+}
+
+.field-error {
+    font-size: 11px;
+    color: var(--danger-color);
+    margin-top: 3px;
+    display: block;
+    min-height: 16px;
+}
+
+input.field-invalid,
+select.field-invalid,
+textarea.field-invalid {
+    border-color: var(--danger-color) !important;
+    box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.12);
+}
+
+.wizard-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 80px;
+}
+
+.fc-wizard-subtabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 16px;
+    padding-bottom: 0;
+}
+
+.fc-wizard-subtab-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: var(--transition);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.fc-wizard-subtab-btn i {
+    width: 13px;
+    height: 13px;
+}
+
+.fc-wizard-subtab-btn.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+.fc-wizard-subtab-btn:hover {
+    color: var(--color-primary);
+    background: var(--bg-tertiary);
+}
+
+.wizard-review-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sheets-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.sheets-status-bar.success {
+    background: var(--success-bg);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+.sheets-status-bar.error {
+    background: var(--danger-bg);
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+}
+
+.sheets-status-bar.loading {
+    background: var(--warning-bg);
+    color: var(--warning-color);
+    border: 1px solid var(--warning-color);
+}
+
+.btn-sheets {
+    background: #1a7341;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 18px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-sheets:hover {
+    background: #145c33;
+    transform: translateY(-1px);
+}
+
+/* MODAL GOOGLE SHEETS */
+.sheets-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.sheets-modal-overlay.open,
+.sheets-modal-overlay.active {
+    opacity: 1 !important;
+    pointer-events: all !important;
+}
+
+.sheets-modal,
+.sheets-modal-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    transform: translateY(16px);
+    transition: transform 0.25s ease;
+}
+
+.sheets-modal-overlay.open .sheets-modal,
+.sheets-modal-overlay.active .sheets-modal,
+.sheets-modal-overlay.open .sheets-modal-card,
+.sheets-modal-overlay.active .sheets-modal-card {
+    transform: translateY(0);
+}
+
+.sheets-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary);
+    z-index: 1;
+    border-radius: 20px 20px 0 0;
+}
+
+.sheets-modal-title-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.sheets-logo-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: rgba(67, 160, 71, 0.1);
+    border: 1px solid rgba(67, 160, 71, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sheets-modal-header h3 {
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+.sheets-modal-header p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.sheets-modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.sheets-modal-close:hover {
+    background: var(--bg-tertiary);
+}
+
+.sheets-modal-close i {
+    width: 16px;
+    height: 16px;
+}
+
+.sheets-modal-body {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* PLANO POSOLÓGICO VISUAL & IMPRESSÃO */
+.posologia-modal-card {
+    max-width: 900px;
+    width: 95%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.posologia-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8fafc;
+}
+
+body.dark-theme .posologia-modal-body {
+    background: #0f172a;
+}
+
+.posologia-print-container {
+    background: white;
+    color: #1e293b;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-family: 'Inter', sans-serif;
+}
+
+.poso-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #0284c7;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+}
+
+.poso-header-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.poso-logo-badge {
+    background: #0284c7;
+    color: white;
+    font-weight: 800;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+}
+
+.poso-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.poso-subtitle {
+    font-size: 11px;
+    color: #64748b;
+    margin: 2px 0 0 0;
+}
+
+.poso-header-meta {
+    text-align: right;
+    font-size: 12px;
+    color: #334155;
+    line-height: 1.7;
+}
+
+/* Barra do Paciente - Destaque e Acessibilidade */
+.poso-patient-bar {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+}
+
+.poso-patient-info {
+    display: flex;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 20px;
+    font-size: 13px;
+    color: #ffffff;
+    font-weight: 500;
+    white-space: nowrap !important;
+    overflow: hidden;
+}
+
+.poso-patient-info > span {
+    white-space: nowrap !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.poso-patient-info strong {
+    color: #bae6fd;
+    font-weight: 600;
+}
+
+.poso-highlight-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Legenda dos períodos do dia - Maior e mais legível */
+.poso-legend-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.poso-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.legend-manha {
+    background: #fffbeb;
+    border-color: #f59e0b;
+}
+
+.legend-tarde {
+    background: #fff7ed;
+    border-color: #f97316;
+}
+
+.legend-noite {
+    background: #eff6ff;
+    border-color: #3b82f6;
+}
+
+.poso-icon {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.poso-legend-item strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.poso-legend-item small {
+    font-size: 12px;
+    color: #475569;
+    font-weight: 500;
+}
+
+/* Tabela de Medicamentos — Acessível e Legível */
+.poso-table-wrapper {
+    margin-bottom: 18px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.poso-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.poso-table th {
+    color: #ffffff;
+    font-weight: 800;
+    padding: 14px 14px;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+    vertical-align: middle;
+}
+
+/* Coluna: Medicamento */
+.poso-table th:nth-child(1) {
+    background: #1e293b;
+    color: #e2e8f0;
+    text-align: left;
+}
+
+/* Coluna: Manhã — Dourado Quente */
+.poso-table th:nth-child(2) {
+    background: #d97706;
+    color: black;
+    text-align: center;
+    border-left: 3px solid #fbbf24;
+    font-size: 13px;
+}
+
+/* Coluna: Tarde — Laranja Intenso */
+.poso-table th:nth-child(3) {
+    background: #ea580c;
+    color: black;
+    text-align: center;
+    font-size: 13px;
+}
+
+/* Coluna: Noite — Azul Profundo */
+.poso-table th:nth-child(4) {
+    background: #1d4ed8;
+    color: black;
+    text-align: center;
+    border-right: 3px solid #60a5fa;
+    font-size: 13px;
+}
+
+/* Coluna: Como Tomar */
+.poso-table th:nth-child(5) {
+    background: #1e293b;
+    color: #e2e8f0;
+    text-align: left;
+}
+
+.poso-table th:not(:first-child):not(:last-child) {
+    text-align: center;
+}
+
+.poso-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.poso-table td:last-child {
+    border-right: none;
+}
+
+.poso-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.poso-table tbody tr:hover {
+    background: #f0f9ff;
+}
+
+/* Nome do medicamento - Hierarquia clara */
+.poso-med-name {
+    font-weight: 800;
+    font-size: 15px;
+    color: #0f172a;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.poso-med-dose-tag {
+    font-size: 12px;
+    color: #0284c7;
+    font-weight: 700;
+    display: inline-block;
+    background: #e0f2fe;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-top: 2px;
+}
+
+/* Badge de Dose — Visual Pill Design */
+.poso-dose-badge {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    min-height: 52px;
+    border-radius: 10px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1;
+    transition: transform 0.1s ease;
+}
+
+.poso-dose-badge.active-dose {
+    color: white;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Badge Manhã — Dourado */
+.poso-table td:nth-child(2) .poso-dose-badge.active-dose {
+    background: linear-gradient(145deg, #f59e0b, #d97706);
+    box-shadow: 0 3px 10px rgba(245, 158, 11, 0.4);
+    border-color: #92400e;
+}
+
+/* Badge Tarde — Laranja */
+.poso-table td:nth-child(3) .poso-dose-badge.active-dose {
+    background: linear-gradient(145deg, #f97316, #ea580c);
+    box-shadow: 0 3px 10px rgba(249, 115, 22, 0.4);
+    border-color: #7c2d12;
+}
+
+/* Badge Noite — Azul */
+.poso-table td:nth-child(4) .poso-dose-badge.active-dose {
+    background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.4);
+    border-color: #1e3a8a;
+}
+
+.poso-dose-badge.active-dose .dose-num {
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.poso-dose-badge.active-dose .dose-unit {
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
+}
+
+.poso-dose-badge.zero-dose {
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    color: #94a3b8;
+    font-size: 18px;
+    width: 52px;
+    min-height: 52px;
+}
+
+/* Caixa de Orientações — Mais legível para o paciente */
+.poso-guidelines-box {
+    background: #fffbeb;
+    border: 2px solid #f59e0b;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+}
+
+.poso-guidelines-box h4 {
+    font-size: 13px;
+    font-weight: 800;
+    color: #92400e;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.poso-guidelines-box ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 12px;
+    color: #431407;
+    line-height: 1.8;
+}
+
+.poso-guidelines-box li {
+    margin-bottom: 4px;
+}
+
+/* Assinaturas */
+.poso-footer-signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 32px;
+    padding-top: 12px;
+}
+
+.poso-sig-block {
+    text-align: center;
+}
+
+.poso-sig-line {
+    border-bottom: 2px solid #334155;
+    margin-bottom: 8px;
+    height: 32px;
+}
+
+.poso-sig-block p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.poso-sig-block small {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ================================================================
+   UX INTEGRALIZADA DAS CAIXAS DE TEXTO SOAP E TERMINAL PRONTUÁRIO
+   ================================================================ */
+.soap-sections-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.soap-field-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.soap-field-card:hover,
+.soap-field-card:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.soap-field-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.soap-badge-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    letter-spacing: 0.02em;
+}
+
+.soap-badge-s {
+    background: rgba(13, 148, 136, 0.12);
+    color: #0d9488;
+    border: 1px solid rgba(13, 148, 136, 0.25);
+}
+
+.soap-badge-o {
+    background: rgba(37, 99, 235, 0.12);
+    color: #2563eb;
+    border: 1px solid rgba(37, 99, 235, 0.25);
+}
+
+.soap-badge-a {
+    background: rgba(217, 119, 6, 0.12);
+    color: #d97706;
+    border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+.soap-badge-p {
+    background: rgba(5, 150, 105, 0.12);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.25);
+}
+
+textarea#soap-s,
+textarea#soap-o,
+textarea#soap-a,
+textarea#soap-p {
+    width: 100%;
+    min-height: 100px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    line-height: 1.6;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: var(--transition);
+    resize: vertical;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+textarea#soap-s {
+    border-left: 4px solid #0d9488;
+}
+
+textarea#soap-o {
+    border-left: 4px solid #2563eb;
+}
+
+textarea#soap-a {
+    border-left: 4px solid #d97706;
+}
+
+textarea#soap-p {
+    border-left: 4px solid #059669;
+}
+
+textarea#soap-s:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    background-color: var(--bg-primary);
+}
+
+textarea#soap-o:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    background-color: var(--bg-primary);
+}
+
+textarea#soap-a:focus {
+    border-color: #d97706;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+    background-color: var(--bg-primary);
+}
+
+textarea#soap-p:focus {
+    border-color: #059669;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+    background-color: var(--bg-primary);
+}
+
+/* TERMINAL DE SAÍDA DO PRONTUÁRIO FORMATADO */
+.copy-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px !important;
+    box-shadow: var(--shadow-md);
+}
+
+.copy-output-wrapper {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-top: 10px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+pre#soap-formatted-output {
+    font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: #e2e8f0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    min-height: 220px;
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+pre#soap-formatted-output::-webkit-scrollbar {
+    width: 6px;
+}
+
+pre#soap-formatted-output::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 4px;
+}
+
+/* ================================================================
+   MELHORIAS DE DESIGN: WIZARD-PANEL-1, FORM-ROW, MORISKY & MED-LIST
+   ================================================================ */
+
+/* 1. WIZARD-PANEL-1 (Identificação & Sinais Vitais do Paciente) */
+#wizard-panel-1 {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+#wizard-panel-1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primary), #0d9488, #3b82f6);
+}
+
+#wizard-panel-1 .wizard-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+#wizard-panel-1 .wizard-panel-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);
+}
+
+#wizard-panel-1 .wizard-panel-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+#wizard-panel-1 .wizard-panel-header p {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin: 2px 0 0 0;
+}
+
+/* Badges Dinâmicos em Tempo Real (Passo 1) */
+#wizard-panel-1 .imc-badge-inline,
+#wizard-panel-1 .vitals-badge {
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    transition: var(--transition);
+    border: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+}
+
+#wizard-panel-1 .imc-badge-inline {
+    background: rgba(13, 148, 136, 0.08);
+    border-color: rgba(13, 148, 136, 0.25);
+    color: var(--color-primary);
+}
+
+
+/* 2. FORM-ROW (Linhas de Formulários Integradas) */
+.form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.form-row>.form-group {
+    flex: 1;
+    min-width: 130px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-row>.form-group.flex-2 {
+    flex: 2;
+    min-width: 200px;
+}
+
+.form-row label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 13px;
+    padding: 10px 12px;
+    transition: var(--transition);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    outline: none;
+    background-color: var(--bg-primary);
+}
+
+
+/* 3. MORISKY-CARD (Card da Escala de Adesão de Morisky-Green) */
+.morisky-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    position: relative;
+}
+
+.morisky-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.morisky-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.morisky-header h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.morisky-header h4 i {
+    color: var(--color-primary);
+    width: 18px;
+    height: 18px;
+}
+
+.score-indicator {
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: var(--radius-full);
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    transition: var(--transition);
+}
+
+.score-indicator.high {
+    background-color: var(--success-bg);
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.score-indicator.medium-low {
+    background-color: var(--warning-bg);
+    color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+.morisky-desc {
+    font-size: 11.5px;
+    color: var(--text-tertiary);
+    margin-bottom: 14px;
+}
+
+.morisky-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.m-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+    gap: 16px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.m-question:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.m-question span {
+    color: var(--text-primary);
+    font-weight: 500;
+    flex: 1;
+}
+
+.m-btn-group {
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.m-btn {
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.m-btn:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.m-btn.active {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.m-btn-group button:first-child.active {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.mat-btn {
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.mat-btn:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--color-primary);
+}
+
+.mat-btn.active {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 4px rgba(13, 148, 136, 0.25);
+}
+
+
+/* 4. FC-MED-LIST-CONTAINER (Lista de Medicamentos em Uso / Posologia) */
+.posologia-list-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 280px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.posologia-list-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+#fc-med-list-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 4px;
+    margin-top: 8px;
+}
+
+#fc-med-list-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+#fc-med-list-container::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+.fc-med-row {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    transition: var(--transition);
+    position: relative;
+}
+
+.fc-med-row:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.fc-med-row-beers {
+    border-left: 4px solid var(--danger-color);
+}
+
+.fc-med-row-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fc-med-row-nome {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fc-med-row-dose {
+    font-size: 11.5px;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.fc-med-row-obs {
+    font-size: 10.5px;
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.fc-posologia-display {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-tertiary);
+    padding: 4px 8px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.posol-pill {
+    display: flex;
+    color: white;
+    flex-direction: column;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    min-width: 34px;
+}
+
+.posol-active {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+}
+
+.posol-zero {
+    opacity: 0.4;
+    color: var(--text-tertiary);
+}
+
+.posol-label {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.posol-val {
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.posol-sep {
+    font-size: 10px;
+    color: var(--text-tertiary);
+}
+
+.fc-remove-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.fc-remove-btn:hover {
+    background-color: var(--danger-bg);
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+
+/* MEDIA PRINT */
+@media print {
+    html, body {
+        height: auto !important;
+        overflow: visible !important;
+        background: white !important;
+    }
+
+    /* Ocultar tudo da página exceto o modal de posologia */
+    body > *:not(#posologia-modal-overlay) {
+        display: none !important;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    /* Mostrar somente o conteúdo imprimível do modal posológico */
+    #posologia-modal-overlay,
+    #posologia-modal-overlay * {
+        visibility: visible;
+    }
+
+    /* Ocultar elementos de interface (não imprimíveis) */
+    .modal-print-actions-top,
+    .modal-print-actions,
+    .poso-custom-times,
+    .sheets-modal-header,
+    .sheets-modal-footer,
+    #btn-posologia-fechar,
+    #btn-poso-whatsapp,
+    #btn-poso-whatsapp-footer,
+    #posologia-modal-close {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Posicionar overlay em modo fluxo absoluto para permitir múltiplas páginas */
+    #posologia-modal-overlay {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 100% !important;
+        background: white !important;
+        display: block !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        z-index: 9999 !important;
+        overflow: visible !important;
+    }
+
+    /* Card do modal ocupa as folhas necessárias */
+    .posologia-modal-card {
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: none !important;
+        height: auto !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: white !important;
+        border-radius: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* Corpo do modal permite quebra natural de páginas */
+    .posologia-modal-body {
+        padding: 0 !important;
+        background: white !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+
+    /* Container imprimível limpo */
+    .posologia-print-container {
+        box-shadow: none !important;
+        padding: 0 !important;
+        border: none !important;
+        background: white !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Garantir que a tabela e os blocos quebrem corretamente em múltiplas páginas */
+    .poso-table {
+        page-break-inside: auto;
+        break-inside: auto;
+    }
+
+    .poso-table thead {
+        display: table-header-group; /* Repetir o cabeçalho em todas as páginas impressas */
+    }
+
+    .poso-table tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .poso-patient-bar,
+    .poso-legend-bar,
+    .poso-header,
+    .poso-guidelines-box,
+    .poso-footer-signatures {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* Configuração da página A4 com margens apropriadas para múltiplas páginas */
+    @page {
+        size: A4 portrait;
+        margin: 10mm 12mm 12mm 12mm;
+    }
+}
