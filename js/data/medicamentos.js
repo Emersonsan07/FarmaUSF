@@ -397,6 +397,26 @@ const MEDICAMENTOS = [
     monitoramento: ["Controle de sintomas de asma", "Candidíase oral", "Crescimento em crianças", "Rouquidão"], beersCriteria: false
   },
   {
+    id: "budesonida_formoterol", nome: "Budesonida + Fumarato de Formoterol", classe: "Corticoide Inalatório + Beta-2 Agonista de Longa Duração (CI + LABA)",
+    indicacoes: "Tratamento de manutenção e alívio (estratégia SMART / MART) da asma persistente moderada a grave e DPOC sintomática.",
+    posologia: "Dose habitual: 1 a 2 inalações (200/6 mcg ou 400/12 mcg) 2x ao dia. Na estratégia MART, pode ser usada como alívio nas crises até limite prescrito.",
+    contraindicacoes: "Hipersensibilidade conhecida aos componentes. Usar com cautela em arritmias cardíacas graves e hipertireoidismo.",
+    orientacoes: "Enxaguar a boca após a inalação. Não engolir a água do enxágue. Verificar se o paciente compreendeu a técnica do inalador de pó seco ou spray.",
+    alertaSUS: "Disponível no Componente Especializado (CEAF) e Farmácia Popular.", remumeCG: "Padronizado no Componente Especializado da Assistência Farmacêutica (SUS)",
+    posologiaVisual: { manha: "1 inal", tarde: "0", noite: "1 inal", obs: "Enxaguar a boca após inalar" },
+    monitoramento: ["Frequência de exacerbações", "Controle de sintomas (ACT/GINA)", "Candidíase oral e rouquidão", "FC"], beersCriteria: false
+  },
+  {
+    id: "ipratropio", nome: "Brometo de Ipratrópio Inalatório", classe: "Broncodilatador Anticolinérgico de Curta Duração (SAMA)",
+    indicacoes: "Broncoespasmo na DPOC, coadjuvante no manejo da exacerbação grave de asma associado a beta-2 agonista.",
+    posologia: "Nebulização: 0,25 a 0,5 mg (20 a 40 gotas) diluídas em soro fisiológico a cada 6-8 horas. Aerossol: 2 jatos 3-4x/dia.",
+    contraindicacoes: "Glaucoma de ângulo fechado não tratado, hipertrofia prostática grave (risco de retenção urinária).",
+    orientacoes: "Evitar contato acidental do aerossol ou vapor com os olhos (risco de midríase e piora de glaucoma). Uso com máscara facial bem ajustada.",
+    alertaSUS: "Disponível no SUS e UPA.", remumeCG: "Padronizado na REMUME de Campo Grande - MS (RENAME)",
+    posologiaVisual: { manha: "SOS", tarde: "SOS", noite: "SOS", obs: "Apenas se prescrito / Proteger os olhos" },
+    monitoramento: ["Boca seca", "Retenção urinária", "Pressão intraocular em pacientes com glaucoma"], beersCriteria: false
+  },
+  {
     id: "prednisona", nome: "Prednisona", classe: "Corticosteroide Sistêmico / Anti-inflamatório Esteroidal",
     indicacoes: "Doenças inflamatórias e autoimunes (artrite reumatoide, LES, asma grave), reações alérgicas graves, exacerbação de DPOC.",
     posologia: "Dose variável conforme indicação: 5-60 mg/dia. Usar menor dose pelo menor tempo. Cursos curtos (5-7 dias) não necessitam desmame.",

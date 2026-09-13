@@ -792,6 +792,28 @@ function initSoapSection() {
             if (cgResultBox) cgResultBox.style.display = "none";
         }
 
+        // Avaliação Respiratória Dinâmica (SpO2 & Sinais de Alerta)
+        const inputSpo2 = document.getElementById("soap-spo2");
+        const spo2Badge = document.getElementById("spo2-badge-inline");
+        if (spo2Badge && inputSpo2) {
+            const spo2Val = parseInt(inputSpo2.value);
+            if (!isNaN(spo2Val) && spo2Val > 0) {
+                if (spo2Val < 92) {
+                    spo2Badge.className = "vitals-badge vitals-badge-danger vitals-badge-spo2-perigo";
+                    spo2Badge.textContent = `SpO₂: ${spo2Val}% (Hipoxemia Grave)`;
+                } else if (spo2Val <= 94) {
+                    spo2Badge.className = "vitals-badge vitals-badge-warning vitals-badge-spo2-alerta";
+                    spo2Badge.textContent = `SpO₂: ${spo2Val}% (Alerta / Limítrofe)`;
+                } else {
+                    spo2Badge.className = "vitals-badge vitals-badge-ok vitals-badge-spo2-normal";
+                    spo2Badge.textContent = `SpO₂: ${spo2Val}% (Adequada)`;
+                }
+            } else {
+                spo2Badge.className = "vitals-badge vitals-badge-neutral";
+                spo2Badge.textContent = "SpO₂: Aguardando";
+            }
+        }
+
         updateWizardSummary();
     }
 
@@ -864,7 +886,11 @@ function initSoapSection() {
         if (window.lucide) lucide.createIcons();
     }
 
-    const inputsStep1 = [inputPeso, inputAltura, inputPaSis, inputPaDia, inputGlicemia, document.getElementById("cg-creatinina"), inputIdade, selectSexo];
+    const inputsStep1 = [
+        inputPeso, inputAltura, inputPaSis, inputPaDia, inputGlicemia,
+        document.getElementById("cg-creatinina"), inputIdade, selectSexo,
+        document.getElementById("soap-spo2"), document.getElementById("soap-fr"), document.getElementById("soap-pfe")
+    ];
     inputsStep1.forEach(el => {
         if (el) {
             el.addEventListener("input", recalculateVitalsInStep1);
@@ -972,6 +998,23 @@ function initSoapSection() {
         objLines.push(`• Biometria e Vitais: Peso: ${peso || '--'} kg | Altura: ${altura || '--'} m | IMC: ${imcValStr}`);
         objLines.push(`• Parâmetros Clínicos: Pressão Arterial: ${paValStr} | Glicemia Capilar: ${gliValStr}`);
 
+        // Parâmetros Respiratórios
+        const spo2Val = document.getElementById("soap-spo2")?.value.trim();
+        const frVal = document.getElementById("soap-fr")?.value.trim();
+        const pfeVal = document.getElementById("soap-pfe")?.value.trim();
+        let respVitais = [];
+        if (spo2Val) respVitais.push(`SpO₂: ${spo2Val}%`);
+        if (frVal) respVitais.push(`FR: ${frVal} irpm`);
+        if (pfeVal) respVitais.push(`Peak Flow (PFE): ${pfeVal} L/min`);
+        if (respVitais.length > 0) {
+            objLines.push(`• Parâmetros Respiratórios: ${respVitais.join(" | ")}`);
+        }
+        const tecStatus = document.getElementById("soap-asthma-tecnica-status")?.value;
+        const dispositivo = document.getElementById("soap-asthma-dispositivo")?.value;
+        if (tecStatus && tecStatus !== "Não Avaliada") {
+            objLines.push(`• Dispositivo Inalatório: ${dispositivo} (Técnica: ${tecStatus})`);
+        }
+
         // Renal
         const creatVal = parseFloat(document.getElementById("cg-creatinina")?.value);
         if (clCrCalculado !== null) {
@@ -1075,6 +1118,31 @@ function initSoapSection() {
             assLines.push(`• Função Renal Reduzida: TFG estimada ${clCrCalculado} mL/min (DRC ${drcEstagio.split(' ')[0]}) — Necessita de acompanhamento posológico e ajuste de medicamentos excretados por via renal.`);
         }
 
+        // Avaliação Farmacoterapêutica da Asma (GINA / PCDT SUS)
+        const temSalbutamol = fcMedList.some(m => m.nome.toLowerCase().includes("salbutamol"));
+        const temCorticoideInal = fcMedList.some(m => m.nome.toLowerCase().includes("beclometasona") || m.nome.toLowerCase().includes("budesonida"));
+        if (temSalbutamol && !temCorticoideInal) {
+            assLines.push(`• ALERTA CRÍTICO GINA / PCDT: Paciente em uso isolado de Beta-2 Agonista de Curta Ação (Salbutamol) sem Corticoide Inalatório protetor de manutenção. Risco elevado de exacerbação grave e óbito por asma.`);
+        }
+        const temBetaBloq = fcMedList.some(m => m.nome.toLowerCase().includes("propranolol") || m.nome.toLowerCase().includes("timolol") || m.nome.toLowerCase().includes("carvedilol"));
+        if (temBetaBloq && (temSalbutamol || ginaAvaliado)) {
+            assLines.push(`• ALERTA DE SEGURANÇA: Betabloqueador prescrito em paciente com histórico ou sintomas de asma. Risco de desencadear broncoespasmo grave e diminuir efetividade dos broncodilatadores.`);
+        }
+
+        if (ginaAvaliado) {
+            const totalSim = Object.values(ginaAnswers).filter(v => v === true).length;
+            const statusGina = totalSim === 0 ? "Asma Controlada (0 critérios)" : (totalSim <= 2 ? `Asma Parcialmente Controlada (${totalSim} critérios)` : `Asma NÃO Controlada (${totalSim} critérios)`);
+            assLines.push(`• Classificação de Controle Clínico da Asma (GINA - 4 semanas): ${statusGina}.`);
+        }
+        if (tecStatus === "Erros Críticos Detectados") {
+            const checkedErrs = Array.from(document.querySelectorAll(".asthma-err-check:checked")).map(c => c.value);
+            if (checkedErrs.length > 0) {
+                assLines.push(`• Técnica Inalatória com Erros Críticos Detectados: ${checkedErrs.join("; ")}.`);
+            } else {
+                assLines.push(`• Técnica inalatória deficiente, necessitando retreinamento presencial.`);
+            }
+        }
+
         // --- PLANO [P] ---
         let planLines = [];
         const intervencaoTipo = selectIntervencaoTipo?.value || "Orientação farmacoterapêutica";
@@ -1082,6 +1150,18 @@ function initSoapSection() {
         planLines.push(`1. Conduta/Intervenção Farmacêutica: ${intervencaoTipo} (Status na Equipe: ${intervencaoStatus}).`);
 
         let itemNum = 2;
+        if (temSalbutamol && !temCorticoideInal) {
+            planLines.push(`${itemNum}. Intervenção com a Equipe Médica: Sugerir prescrição de Corticoide Inalatório (Beclometasona) para manutenção e prevenção de crises, conforme diretrizes GINA / PCDT SUS.`);
+            itemNum++;
+        }
+
+        if (tecStatus === "Erros Críticos Detectados" || ginaAvaliado) {
+            planLines.push(`${itemNum}. Educação em Técnica Inalatória: Realizado treino prático presencial do dispositivo inalatório com espaçador valvulado (agitar, expirar antes, inspirar lento/profundo, apneia de 10 segundos e bochecho oral pós-corticoide para prevenção de candidíase e disfonia).`);
+            itemNum++;
+            planLines.push(`${itemNum}. Plano de Ação Escrito da Asma: Elaborado e entregue o plano personalizado de manejo (Zonas Verde, Amarela e Vermelha) para conduta precoce em crises.`);
+            itemNum++;
+        }
+
         if (prmList.length > 0) {
             planLines.push(`${itemNum}. Plano de Ação para os PRMs/RNMs Identificados:`);
             prmList.forEach(p => {
@@ -1158,6 +1238,242 @@ function initSoapSection() {
         consolidarParaSoap();
         updateFormattedText();
         if (window.showToast) window.showToast("Modelo SOAP de Consulta USF aplicado!", "info");
+    };
+
+    // ================================================================
+    // CUIDADO FARMACÊUTICO NA ASMA (GINA / PCDT SUS)
+    // ================================================================
+    let ginaAnswers = { 1: false, 2: false, 3: false, 4: false };
+    let ginaAvaliado = false;
+
+    window.setGinaAnswer = function (q, isSim) {
+        ginaAnswers[q] = isSim;
+        ginaAvaliado = true;
+        const btnSim = document.querySelector(`[data-gina-q="${q}"][data-val="sim"]`);
+        const btnNao = document.querySelector(`[data-gina-q="${q}"][data-val="nao"]`);
+        if (btnSim && btnNao) {
+            if (isSim) {
+                btnSim.className = "gina-btn active-sim";
+                btnNao.className = "gina-btn";
+            } else {
+                btnSim.className = "gina-btn";
+                btnNao.className = "gina-btn active-nao";
+            }
+        }
+        updateGinaControl();
+        consolidarParaSoap();
+        updateFormattedText();
+    };
+
+    function updateGinaControl() {
+        const totalSim = Object.values(ginaAnswers).filter(v => v === true).length;
+        const badge = document.getElementById("soap-gina-result-badge");
+        const condutaBox = document.getElementById("soap-gina-conduta-box");
+        if (!badge) return;
+
+        if (!ginaAvaliado) {
+            badge.className = "badge";
+            badge.style.backgroundColor = "var(--bg-tertiary)";
+            badge.style.color = "var(--text-secondary)";
+            badge.textContent = "Controle GINA: Não Avaliado";
+            return;
+        }
+
+        if (totalSim === 0) {
+            badge.className = "badge";
+            badge.style.backgroundColor = "rgba(16, 185, 129, 0.15)";
+            badge.style.color = "#059669";
+            badge.textContent = "Controle GINA: Controlada (0)";
+            if (condutaBox) {
+                condutaBox.style.background = "rgba(16, 185, 129, 0.08)";
+                condutaBox.style.borderLeftColor = "#10b981";
+                condutaBox.innerHTML = "<strong>Conduta GINA Sugerida:</strong> Asma Bem Controlada (0 respostas 'Sim'). Manter etapa atual de tratamento (STEP) e reforçar adesão diária e técnica correta.";
+            }
+        } else if (totalSim <= 2) {
+            badge.className = "badge";
+            badge.style.backgroundColor = "rgba(245, 158, 11, 0.15)";
+            badge.style.color = "#d97706";
+            badge.textContent = `Controle GINA: Parcialmente Controlada (${totalSim})`;
+            if (condutaBox) {
+                condutaBox.style.background = "rgba(245, 158, 11, 0.08)";
+                condutaBox.style.borderLeftColor = "#f59e0b";
+                condutaBox.innerHTML = `<strong>Conduta GINA Sugerida:</strong> Asma Parcialmente Controlada (${totalSim} critérios positivos). Checar adesão ao corticoide inalatório e técnica antes de escalar terapia.`;
+            }
+        } else {
+            badge.className = "badge";
+            badge.style.backgroundColor = "rgba(239, 68, 68, 0.15)";
+            badge.style.color = "#dc2626";
+            badge.textContent = `Controle GINA: NÃO Controlada (${totalSim})`;
+            if (condutaBox) {
+                condutaBox.style.background = "rgba(239, 68, 68, 0.08)";
+                condutaBox.style.borderLeftColor = "#ef4444";
+                condutaBox.innerHTML = `<strong>Conduta GINA Sugerida:</strong> Asma NÃO Controlada (${totalSim} critérios positivos). Risco iminente de exacerbação grave. Checar técnica inalatória com urgência e encaminhar para escalonamento médico (STEP 3/4).`;
+            }
+        }
+    }
+
+    window.toggleAsthmaForm = function () {
+        const form = document.getElementById("soap-asthma-form-content");
+        const chevron = document.getElementById("asthma-form-chevron");
+        const btn = document.getElementById("btn-toggle-asthma-form");
+        if (!form) return;
+        if (form.style.display === "none" || form.style.display === "") {
+            form.style.display = "block";
+            if (btn) btn.innerHTML = `<i data-lucide="chevron-up" style="width:12px;height:12px;"></i> Recolher`;
+            ginaAvaliado = true;
+            updateGinaControl();
+        } else {
+            form.style.display = "none";
+            if (btn) btn.innerHTML = `<i data-lucide="chevron-down" style="width:12px;height:12px;"></i> Abrir`;
+        }
+        if (window.lucide) lucide.createIcons();
+    };
+
+    window.updateAsthmaTechState = function () {
+        const selectStatus = document.getElementById("soap-asthma-tecnica-status");
+        const errosWrapper = document.getElementById("soap-asthma-erros-wrapper");
+        if (errosWrapper && selectStatus) {
+            errosWrapper.style.display = selectStatus.value === "Erros Críticos Detectados" ? "block" : "none";
+        }
+        consolidarParaSoap();
+        updateFormattedText();
+    };
+
+    window.aplicarTemplateSoapAsma = function () {
+        const selectTipo = document.getElementById("soap-atendimento-tipo");
+        if (selectTipo) {
+            selectTipo.value = "Consulta em USF / Ambulatorial";
+            window.toggleVdfFieldsDisplay();
+        }
+
+        // Abre o formulário GINA
+        const form = document.getElementById("soap-asthma-form-content");
+        if (form) form.style.display = "block";
+        const btn = document.getElementById("btn-toggle-asthma-form");
+        if (btn) btn.innerHTML = `<i data-lucide="chevron-up" style="width:12px;height:12px;"></i> Recolher`;
+        ginaAvaliado = true;
+
+        // Preenche valores vitais respiratórios caso estejam vazios
+        const inputSpo2 = document.getElementById("soap-spo2");
+        const inputFr = document.getElementById("soap-fr");
+        if (inputSpo2 && !inputSpo2.value) inputSpo2.value = "96";
+        if (inputFr && !inputFr.value) inputFr.value = "18";
+
+        recalculateVitalsInStep1();
+        updateGinaControl();
+
+        // Inserir histórico no Subjetivo [S]
+        const subText = [
+            "• Queixa Principal: Acompanhamento farmacoterapêutico de Asma Brônquica na Atenção Primária.",
+            "• Histórico Clínico: Paciente relata episódios recorrentes de dispneia e tosse seca, agravados em períodos de mudança climática ou contato com poeira/mofo.",
+            "• Frequência de Sintomas: Despertares noturnos eventuais e sensação de aperto torácico ao subir ladeiras ou fazer esforços.",
+            "• Uso de Resgate: Relata uso frequente de bombinha de alívio (Salbutamol) nas crises.",
+            "• Histórico de Exacerbações: Nega internações prévias; 1 atendimento em pronto-socorro / UPA no último ano por broncoespasmo."
+        ].join("\n");
+
+        if (txtS) txtS.value = subText;
+
+        consolidarParaSoap();
+        updateFormattedText();
+        if (window.showToast) window.showToast("Modelo SOAP de Asma (GINA / PCDT) aplicado com sucesso!", "success");
+        else alert("Modelo SOAP de Asma aplicado com sucesso!");
+        if (window.lucide) lucide.createIcons();
+    };
+
+    // MODAL PLANO DE AÇÃO DA ASMA
+    window.openPlanoAsmaModal = function () {
+        const modal = document.getElementById("plano-asma-modal-overlay");
+        if (modal) {
+            modal.style.display = "flex";
+            window.puxarDadosSoapParaPlanoAsma();
+            if (window.lucide) lucide.createIcons();
+        }
+    };
+
+    window.closePlanoAsmaModal = function () {
+        const modal = document.getElementById("plano-asma-modal-overlay");
+        if (modal) modal.style.display = "none";
+    };
+
+    window.puxarDadosSoapParaPlanoAsma = function () {
+        const nome = inputNome?.value.trim() || "Paciente";
+        const pfe = document.getElementById("soap-pfe")?.value.trim() || "";
+        const inputNomeModal = document.getElementById("plano-asma-nome");
+        const inputPfeModal = document.getElementById("plano-asma-pfe-ref");
+        const viewNome = document.getElementById("view-plano-nome");
+        const viewPfe = document.getElementById("view-plano-pfe");
+
+        if (inputNomeModal) inputNomeModal.value = nome !== "Paciente" ? nome : "";
+        if (inputPfeModal && pfe) inputPfeModal.value = `${pfe} L/min`;
+        if (viewNome) viewNome.textContent = nome;
+        if (viewPfe) viewPfe.textContent = pfe ? `${pfe} L/min` : "A definir";
+    };
+
+    const inputNomePlano = document.getElementById("plano-asma-nome");
+    const inputPfePlano = document.getElementById("plano-asma-pfe-ref");
+    if (inputNomePlano) {
+        inputNomePlano.addEventListener("input", () => {
+            const v = document.getElementById("view-plano-nome");
+            if (v) v.textContent = inputNomePlano.value.trim() || "Paciente";
+        });
+    }
+    if (inputPfePlano) {
+        inputPfePlano.addEventListener("input", () => {
+            const v = document.getElementById("view-plano-pfe");
+            if (v) v.textContent = inputPfePlano.value.trim() || "-- L/min";
+        });
+    }
+
+    window.copyPlanoAsmaTexto = function () {
+        const nome = document.getElementById("plano-asma-nome")?.value.trim() || "Paciente";
+        const pfe = document.getElementById("plano-asma-pfe-ref")?.value.trim() || "Não definido";
+        const texto = `=== PLANO DE AÇÃO ESCRITO DA ASMA (USF / SUS) ===
+Paciente: ${nome} | Melhor PFE: ${pfe}
+
+🟢 ZONA VERDE - ASMA CONTROLADA (PFE ≥ 80%):
+- Sentindo-se bem, sem chiado ou falta de ar.
+- Tomar o Corticoide Inalatório preventivo diariamente no mesmo horário. Lavar a boca após inalar.
+
+🟡 ZONA AMARELA - SINAL DE ALERTA (PFE 50-79%):
+- Sintomas piorando, tosse, chiado ou despertar noturno.
+- Usar Salbutamol 100mcg (2 jatos com espaçador). Se não melhorar em 48h, comparecer à USF.
+
+🔴 ZONA VERMELHA - EMERGÊNCIA MÉDICA (PFE < 50%):
+- Falta de ar intensa, dificuldade para falar, lábios roxos.
+- Usar Salbutamol 4 a 6 jatos com espaçador e procurar imediatamente UPA / SAMU 192.`;
+
+        navigator.clipboard.writeText(texto).then(() => {
+            if (window.showToast) window.showToast("Plano de Ação copiado com sucesso!", "success");
+            else alert("Plano de Ação copiado!");
+        });
+    };
+
+    window.printPlanoAsma = function () {
+        const area = document.getElementById("plano-asma-printable-area");
+        if (!area) return;
+        const printWin = window.open('', '', 'width=800,height=600');
+        printWin.document.write(`
+            <html>
+            <head>
+                <title>Plano de Ação da Asma - FarmaUSF</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; color: #1e293b; }
+                    h2 { margin: 0; font-size: 20px; }
+                    ul { margin: 4px 0 0 16px; padding: 0; }
+                    @media print { body { padding: 0; } }
+                </style>
+            </head>
+            <body>
+                ${area.innerHTML}
+            </body>
+            </html>
+        `);
+        printWin.document.close();
+        printWin.focus();
+        setTimeout(() => {
+            printWin.print();
+            printWin.close();
+        }, 300);
     };
 
     window.updateFormattedText = updateFormattedText;

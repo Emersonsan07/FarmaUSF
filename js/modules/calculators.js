@@ -186,10 +186,29 @@ function initCalculatorsSection() {
                 });
             }
             if (sSexo && sSexo.value) {
-                ["calc-sexo", "calc-epi-sexo", "calc-pi-sexo"].forEach(id => {
+                ["calc-sexo", "calc-epi-sexo", "calc-pi-sexo", "calc-pfe-sexo"].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) { el.value = sSexo.value; updatedCount++; }
                 });
+            }
+            // Sincronizar dados respiratórios (Idade, Altura, PFE)
+            if (sIdade && sIdade.value) {
+                const elPfeIdade = document.getElementById("calc-pfe-idade");
+                if (elPfeIdade) { elPfeIdade.value = sIdade.value; updatedCount++; }
+            }
+            if (sAltura && sAltura.value) {
+                const elPfeAltura = document.getElementById("calc-pfe-altura");
+                if (elPfeAltura) {
+                    let altVal = parseFloat(sAltura.value);
+                    if (altVal < 3) altVal = Math.round(altVal * 100);
+                    elPfeAltura.value = altVal;
+                    updatedCount++;
+                }
+            }
+            const sPfe = document.getElementById("soap-pfe");
+            if (sPfe && sPfe.value) {
+                const elPfeMedido = document.getElementById("calc-pfe-medido");
+                if (elPfeMedido) { elPfeMedido.value = sPfe.value; updatedCount++; }
             }
 
             if (updatedCount > 0) {
@@ -198,6 +217,7 @@ function initCalculatorsSection() {
                 document.getElementById("btn-calcular-clcr")?.click();
                 document.getElementById("btn-calcular-epi")?.click();
                 document.getElementById("btn-calcular-imc")?.click();
+                document.getElementById("btn-calcular-pfe")?.click();
             } else {
                 alert("Preencha primeiro os dados do paciente no prontuário SOAP (Idade, Peso, Altura, Creatinina, Sexo) para puxar automaticamente para as calculadoras.");
             }
@@ -990,6 +1010,247 @@ function initCalculatorsSection() {
             bsaResult.innerHTML = "";
         });
     }
+
+    // -------------------------------------------------------------
+    // CALCULADORA 9: Teste de Controle da Asma (ACT)
+    // -------------------------------------------------------------
+    const btnCalcularAct = document.getElementById("btn-calcular-act");
+    const btnLimparAct = document.getElementById("btn-limpar-act");
+    const actResult = document.getElementById("act-result-container");
+
+    function calcularAct(showError = true) {
+        if (!actResult) return;
+        const q1 = parseInt(document.getElementById("calc-act-q1")?.value) || 5;
+        const q2 = parseInt(document.getElementById("calc-act-q2")?.value) || 5;
+        const q3 = parseInt(document.getElementById("calc-act-q3")?.value) || 5;
+        const q4 = parseInt(document.getElementById("calc-act-q4")?.value) || 5;
+        const q5 = parseInt(document.getElementById("calc-act-q5")?.value) || 5;
+
+        const totalScore = q1 + q2 + q3 + q4 + q5;
+        let classStr = "";
+        let colorClass = "";
+        let borderClass = "";
+        let condutaStr = "";
+
+        if (totalScore === 25) {
+            classStr = "Asma Totalmente Controlada";
+            colorClass = "var(--success-color)";
+            borderClass = "#10b981";
+            condutaStr = "Excelente controle dos sintomas nas últimas 4 semanas. Manter plano atual e reforçar adesão e hábitos de vida saudáveis.";
+        } else if (totalScore >= 20) {
+            classStr = "Asma Bem Controlada";
+            colorClass = "#0284c7";
+            borderClass = "#0284c7";
+            condutaStr = "Bom controle dos sintomas. Avaliar se a técnica inalatória e o bochecho pós-corticoide estão sendo mantidos adequadamente.";
+        } else {
+            classStr = "Asma NÃO Controlada";
+            colorClass = "var(--danger-color)";
+            borderClass = "#ef4444";
+            condutaStr = "Alto risco de exacerbação grave. Checar adesão diária ao corticoide inalatório, corrigir erros na técnica inalatória e discutir com a equipe médica escalonamento (STEP terapêutico).";
+        }
+
+        const summaryText = `[Calculadora ACT - Teste de Controle da Asma]
+• Escore Total: ${totalScore} / 25 pontos
+• Classificação: ${classStr}
+• Conduta Farmacêutica: ${condutaStr}`;
+
+        actResult.style.display = "block";
+        actResult.innerHTML = `
+            <div class="result-box" style="border-left: 5px solid ${borderClass}; padding: 14px; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-size: 18px; font-weight: 800; color: ${colorClass}; font-family: 'Outfit', sans-serif;">
+                        Escore ACT: ${totalScore} <span style="font-size: 13px; font-weight: 500; color: var(--text-tertiary);">/ 25 pontos</span>
+                    </div>
+                    <span class="badge" style="background-color: ${borderClass}20; color: ${borderClass}; font-weight: 700; font-size: 11px;">
+                        ${classStr}
+                    </span>
+                </div>
+                <div style="width: 100%; height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin-bottom: 12px;">
+                    <div style="width: ${(totalScore / 25) * 100}%; height: 100%; background: ${borderClass}; transition: width 0.3s;"></div>
+                </div>
+                <p style="font-size: 12.5px; line-height: 1.5; color: var(--text-primary); margin: 0 0 10px 0;">
+                    <strong>Conduta Recomendada:</strong> ${condutaStr}
+                </p>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button class="btn btn-secondary btn-sm" type="button" onclick="window.copyToClipboardText('${summaryText.replace(/'/g, "\\'")}', this)">
+                        <i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copiar
+                    </button>
+                    <button class="btn btn-primary btn-sm" type="button" onclick="window.sendResultToSOAP('${summaryText.replace(/'/g, "\\'")}')">
+                        <i data-lucide="file-text" style="width: 12px; height: 12px;"></i> Inserir no SOAP
+                    </button>
+                </div>
+            </div>
+        `;
+
+        if (showError) addCalcToHistory("Teste de Controle da Asma (ACT)", `${totalScore}/25 (${classStr})`, summaryText);
+        if (window.lucide) lucide.createIcons();
+    }
+
+    if (btnCalcularAct) btnCalcularAct.addEventListener("click", () => calcularAct(true));
+    if (btnLimparAct) {
+        btnLimparAct.addEventListener("click", () => {
+            ["calc-act-q1", "calc-act-q2", "calc-act-q3", "calc-act-q4", "calc-act-q5"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = "5";
+            });
+            if (actResult) {
+                actResult.style.display = "none";
+                actResult.innerHTML = "";
+            }
+        });
+    }
+
+    // -------------------------------------------------------------
+    // CALCULADORA 10: Pico de Fluxo Expiratório Previsto (Peak Flow / PFE)
+    // -------------------------------------------------------------
+    const pfeSexo = document.getElementById("calc-pfe-sexo");
+    const pfeIdade = document.getElementById("calc-pfe-idade");
+    const pfeAltura = document.getElementById("calc-pfe-altura");
+    const pfeMedido = document.getElementById("calc-pfe-medido");
+    const btnCalcularPfe = document.getElementById("btn-calcular-pfe");
+    const btnLimparPfe = document.getElementById("btn-limpar-pfe");
+    const pfeResult = document.getElementById("pfe-result-container");
+
+    function calcularPfe(showError = true) {
+        if (!pfeResult) return;
+        const sexo = pfeSexo?.value || "M";
+        const idade = parseInt(pfeIdade?.value);
+        let altura = parseFloat(pfeAltura?.value);
+        const medido = parseFloat(pfeMedido?.value) || null;
+
+        if (!idade || !altura || idade <= 0 || altura <= 0) {
+            if (showError) alert("Por favor, preencha Idade e Altura para calcular o Peak Flow previsto.");
+            return;
+        }
+
+        // Se altura informada em metros (ex: 1.70), converte para cm (170)
+        if (altura < 3) altura = altura * 100;
+
+        let previsto = 0;
+        if (idade < 18) {
+            // Equação pediátrica de Polgar
+            previsto = (altura - 100) * 5 + 100;
+        } else {
+            // Equações de referência padrão (Knudson / Gregg & Nunn)
+            if (sexo === "M") {
+                previsto = (altura * 5.48) - (idade * 1.7) - 355;
+            } else {
+                previsto = (altura * 3.72) - (idade * 1.25) - 145;
+            }
+        }
+
+        previsto = Math.round(Math.max(100, Math.min(850, previsto)));
+
+        const zonaVerdeMin = Math.round(previsto * 0.80);
+        const zonaAmarelaMin = Math.round(previsto * 0.50);
+
+        let zonaTexto = "";
+        let pctMedidoStr = "";
+        let zonaCor = "#10b981";
+
+        if (medido && medido > 0) {
+            const pct = Math.round((medido / previsto) * 100);
+            pctMedidoStr = `\n• PFE Medido: ${medido} L/min (${pct}% do previsto)`;
+            if (pct >= 80) {
+                zonaTexto = "🟢 ZONA VERDE (Segurança - Asma Estável)";
+                zonaCor = "#10b981";
+            } else if (pct >= 50) {
+                zonaTexto = "🟡 ZONA AMARELA (Alerta - Sintomas Piorando / Usar Salbutamol)";
+                zonaCor = "#d97706";
+            } else {
+                zonaTexto = "🔴 ZONA VERMELHA (Perigo - Crise Grave / Procurar UPA / SAMU)";
+                zonaCor = "#ef4444";
+            }
+        }
+
+        const summaryText = `[Pico de Fluxo Expiratório - Peak Flow Previsto]
+• Sexo: ${sexo === 'M' ? 'Masculino' : 'Feminino'} | Idade: ${idade} anos | Altura: ${Math.round(altura)} cm
+• PFE Previsto: ${previsto} L/min${pctMedidoStr}
+• Zonas de Segurança:
+  - 🟢 Verde (≥ 80%): ≥ ${zonaVerdeMin} L/min (Estável)
+  - 🟡 Amarela (50-79%): ${zonaAmarelaMin} a ${zonaVerdeMin - 1} L/min (Alerta de crise)
+  - 🔴 Vermelha (< 50%): < ${zonaAmarelaMin} L/min (Emergência)
+${zonaTexto ? '• Situação Atual: ' + zonaTexto : ''}`;
+
+        pfeResult.style.display = "block";
+        pfeResult.innerHTML = `
+            <div class="result-box" style="border-left: 5px solid ${zonaCor}; padding: 14px; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div>
+                        <span style="font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; font-weight: 700;">Peak Flow Previsto</span>
+                        <div style="font-size: 22px; font-weight: 800; color: #0284c7; font-family: 'Outfit', sans-serif;">
+                            ${previsto} <span style="font-size: 13px; font-weight: 500;">L/min</span>
+                        </div>
+                    </div>
+                    ${medido ? `
+                        <div style="text-align: right;">
+                            <span style="font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; font-weight: 700;">Aferido na Consulta</span>
+                            <div style="font-size: 20px; font-weight: 800; color: ${zonaCor}; font-family: 'Outfit', sans-serif;">
+                                ${medido} L/min (${Math.round((medido / previsto) * 100)}%)
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                ${zonaTexto ? `
+                    <div style="padding: 8px 12px; background: ${zonaCor}15; border-radius: var(--radius-sm); border: 1px solid ${zonaCor}40; margin-bottom: 12px; font-weight: 700; font-size: 12px; color: ${zonaCor};">
+                        ${zonaTexto}
+                    </div>
+                ` : ''}
+
+                <!-- Tabela das Zonas do Plano de Ação -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; font-size: 11.5px;">
+                    <div class="asthma-zone-card asthma-zone-green" style="padding: 8px; margin: 0;">
+                        <strong style="color: #10b981;">🟢 Verde (≥ 80%)</strong>
+                        <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">≥ ${zonaVerdeMin} L/min</div>
+                        <span style="font-size: 10px; color: var(--text-tertiary);">Manter terapia diária</span>
+                    </div>
+                    <div class="asthma-zone-card asthma-zone-yellow" style="padding: 8px; margin: 0;">
+                        <strong style="color: #d97706;">🟡 Amarela (50-79%)</strong>
+                        <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">${zonaAmarelaMin} - ${zonaVerdeMin - 1} L/min</div>
+                        <span style="font-size: 10px; color: var(--text-tertiary);">Usar resgate / Alerta</span>
+                    </div>
+                    <div class="asthma-zone-card asthma-zone-red" style="padding: 8px; margin: 0;">
+                        <strong style="color: #ef4444;">🔴 Vermelha (< 50%)</strong>
+                        <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">< ${zonaAmarelaMin} L/min</div>
+                        <span style="font-size: 10px; color: var(--text-tertiary);">Emergência / UPA 192</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                    <button class="btn btn-secondary btn-sm" type="button" onclick="window.copyToClipboardText('${summaryText.replace(/'/g, "\\'")}', this)">
+                        <i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copiar
+                    </button>
+                    <button class="btn btn-primary btn-sm" type="button" onclick="window.sendResultToSOAP('${summaryText.replace(/'/g, "\\'")}')">
+                        <i data-lucide="file-text" style="width: 12px; height: 12px;"></i> Inserir no SOAP
+                    </button>
+                </div>
+            </div>
+        `;
+
+        if (showError) addCalcToHistory("Peak Flow Previsto (PFE)", `${previsto} L/min`, summaryText);
+        if (window.lucide) lucide.createIcons();
+    }
+
+    if (btnCalcularPfe) btnCalcularPfe.addEventListener("click", () => calcularPfe(true));
+    [pfeSexo, pfeIdade, pfeAltura, pfeMedido].forEach(el => {
+        if (el) {
+            el.addEventListener("input", () => calcularPfe(false));
+            el.addEventListener("change", () => calcularPfe(false));
+        }
+    });
+
+    if (btnLimparPfe) {
+        btnLimparPfe.addEventListener("click", () => {
+            if (pfeIdade) pfeIdade.value = "";
+            if (pfeAltura) pfeAltura.value = "";
+            if (pfeMedido) pfeMedido.value = "";
+            if (pfeResult) {
+                pfeResult.style.display = "none";
+                pfeResult.innerHTML = "";
+            }
+        });
+    }
 }
 
 // -------------------------------------------------------------
@@ -1204,6 +1465,75 @@ const CARTILHAS_EDUCATIVAS = {
             <li><strong>Medicamentos Controlados:</strong> Devem ser devolvidos diretamente na farmácia da UBS portando a receita para o devido descarte supervisionado pelo Farmacêutico Responsável Técnico.</li>
         </ul>
     `
+    },
+    inaladores: {
+        title: "Guia Visual da Técnica Inalatória & Dispositivos (SUS)",
+        content: `
+        <p><strong>Fato Clínico:</strong> Mais de 70% dos pacientes asmáticos na Atenção Primária cometem erros críticos de inalação, o que impede que o medicamento atinja os brônquios distais.</p>
+        <h4 style="margin-top: 12px; color: #0284c7; font-family: 'Outfit', sans-serif;">Passo a Passo: Spray (MDI) com Espaçador Valvulado (Padrão-Ouro SUS)</h4>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+            <div class="tech-step-item">
+                <span class="tech-step-num">1</span>
+                <div><strong>Destampar e agitar:</strong> Retire a tampa e agite o frasco energicamente por 5 a 10 segundos na vertical.</div>
+            </div>
+            <div class="tech-step-item">
+                <span class="tech-step-num">2</span>
+                <div><strong>Acoplar no espaçador:</strong> Encaixe a bombinha firmemente no orifício traseiro do espaçador.</div>
+            </div>
+            <div class="tech-step-item">
+                <span class="tech-step-num">3</span>
+                <div><strong>Soltar o ar dos pulmões:</strong> Expire completamente todo o ar pela boca, longe do espaçador.</div>
+            </div>
+            <div class="tech-step-item">
+                <span class="tech-step-num">4</span>
+                <div><strong>Posicionar e vedar:</strong> Coloque o bocal do espaçador entre os dentes e feche bem os lábios (sem morder). Se usar máscara facial, vede firmemente sobre nariz e boca.</div>
+            </div>
+            <div class="tech-step-item">
+                <span class="tech-step-num">5</span>
+                <div><strong>Disparar 1 jato e inalar:</strong> Aperte a bombinha uma única vez. Inspire de forma <em>lenta e profunda</em> pela boca (ou respire calmamente 5 vezes na máscara).</div>
+            </div>
+            <div class="tech-step-item">
+                <span class="tech-step-num">6</span>
+                <div><strong>Segurar a respiração por 10 segundos:</strong> Tire o bocal da boca e prenda a respiração por 10 segundos (ou até o limite do conforto).</div>
+            </div>
+            <div class="tech-step-item" style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981;">
+                <span class="tech-step-num" style="background: #10b981;">7</span>
+                <div><strong>Higiene Oral Obrigatória:</strong> Ao usar corticoide inalatório (Beclometasona ou Budesonida), enxágue e bocheche água e cuspa fora para evitar candidíase oral (sapinho) e rouquidão.</div>
+            </div>
+        </div>
+        <h4 style="margin-top: 14px; color: #ef4444; font-family: 'Outfit', sans-serif;">Erros Críticos Frequentes que Anulam o Efeito:</h4>
+        <ul style="padding-left: 20px; line-height: 1.5; font-size: 13px;">
+            <li><strong>Disparar 2 jatos de uma vez só:</strong> As partículas colidem e grudam nas paredes do espaçador. Dispare sempre 1 jato por vez!</li>
+            <li><strong>Inspirar rápido demais em spray:</strong> O medicamento bate na parede da garganta e não desce aos pulmões.</li>
+            <li><strong>Não fazer bochecho pós-corticoide:</strong> Favorece o surgimento de fungos na cavidade oral.</li>
+        </ul>
+        `
+    },
+    mitos_asma: {
+        title: "Mitos e Verdades sobre as 'Bombinhas' de Asma",
+        content: `
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="background: rgba(239, 68, 68, 0.06); padding: 12px; border-radius: var(--radius-md); border-left: 4px solid #ef4444;">
+                <h4 style="margin: 0 0 4px 0; color: #ef4444; font-size: 14px; font-family: 'Outfit', sans-serif;">1. 'A bombinha vicia ou causa dependência?'</h4>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5;"><strong>MITO ABSOLUTO:</strong> As bombinhas NÃO causam dependência química nem vício. A asma é uma doença inflamatória crônica que exige controle contínuo, exatamente como a hipertensão e o diabetes precisam de remédio diário.</p>
+            </div>
+
+            <div style="background: rgba(245, 158, 11, 0.06); padding: 12px; border-radius: var(--radius-md); border-left: 4px solid #f59e0b;">
+                <h4 style="margin: 0 0 4px 0; color: #d97706; font-size: 14px; font-family: 'Outfit', sans-serif;">2. 'A bombinha ataca o coração?'</h4>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5;"><strong>MITO:</strong> O broncodilatador de alívio (Salbutamol) pode causar tremor ou taquicardia leve e passageira, especialmente em doses altas. Esse efeito colateral diminui drasticamente quando a asma é tratada corretamente com o corticoide inalatório preventivo, pois o paciente não precisará de doses excessivas de resgate.</p>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.06); padding: 12px; border-radius: var(--radius-md); border-left: 4px solid #10b981;">
+                <h4 style="margin: 0 0 4px 0; color: #059669; font-size: 14px; font-family: 'Outfit', sans-serif;">3. 'O corticoide inalatório engorda ou faz mal como cortisona em comprimido?'</h4>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5;"><strong>MITO:</strong> A dose inalada é minúscula (medida em microgramas) e atua diretamente nos pulmões com absorção sistêmica insignificante. Ao contrário dos comprimidos orais prolongados, o corticoide inalatório não provoca ganho de peso, osteoporose ou síndrome de Cushing.</p>
+            </div>
+
+            <div style="background: rgba(2, 132, 199, 0.06); padding: 12px; border-radius: var(--radius-md); border-left: 4px solid #0284c7;">
+                <h4 style="margin: 0 0 4px 0; color: #0284c7; font-size: 14px; font-family: 'Outfit', sans-serif;">4. 'Se não sinto falta de ar hoje, posso deixar de tomar a bombinha preventiva?'</h4>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5;"><strong>PERIGO:</strong> Não! A ausência de sintomas é a prova de que a medicação está desinflamando seus brônquios. Parar o corticoide faz a inflamação voltar sem aviso, abrindo portas para uma crise grave e imprevisível.</p>
+            </div>
+        </div>
+        `
     }
 };
 
@@ -1217,6 +1547,8 @@ window.showEduModal = function (topic) {
         if (topic === "antibioticos") iconName = "pill";
         else if (topic === "fitoterapicos") iconName = "leaf";
         else if (topic === "descarte") iconName = "trash-2";
+        else if (topic === "inaladores") iconName = "wind";
+        else if (topic === "mitos_asma") iconName = "help-circle";
 
         title.innerHTML = `<i data-lucide="${iconName}" class="color-primary" style="width: 24px; height: 24px;"></i> ${CARTILHAS_EDUCATIVAS[topic].title}`;
         content.innerHTML = CARTILHAS_EDUCATIVAS[topic].content;
