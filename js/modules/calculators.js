@@ -1399,6 +1399,228 @@ ${conduta}
             formattedOutput.textContent = "Preencha a ficha ao lado para gerar a notificação estruturada...";
         });
     }
+
+    // -------------------------------------------------------------
+    // 11. CALCULADORA: ESTRATIFICAÇÃO DE RISCO DO PÉ DIABÉTICO (IWGDF / SBD 2024)
+    // -------------------------------------------------------------
+    const btnCalcularPe = document.getElementById("btn-calcular-pe-diabetico");
+    const btnLimparPe = document.getElementById("btn-limpar-pe-diabetico");
+    const containerResultPe = document.getElementById("pe-diabetico-result-container");
+
+    if (btnCalcularPe) {
+        btnCalcularPe.addEventListener("click", () => {
+            const feridaAtiva = document.getElementById("calc-pe-ferida")?.value === "sim";
+            const historiaPrevia = document.getElementById("calc-pe-historia")?.value === "sim";
+            const monofilamentoAlterado = document.getElementById("calc-pe-monofilamento")?.value === "alterado";
+            const pulsosAusentes = document.getElementById("calc-pe-pulsos")?.value === "ausentes";
+            const deformidade = document.getElementById("calc-pe-deformidade")?.value === "sim";
+
+            let grauRisco = 0;
+            let nivelClass = "success";
+            let tituloRisco = "Risco 0 — Muito Baixo Risco de Ulceração";
+            let revisao = "Anual (a cada 12 meses na USF)";
+            let conduta = "Manter acompanhamento anual na APS. Educação em saúde para autocuidado diário (inspeção visual dos pés, calçado fechado adequado, corte reto das unhas, hidratação da pele com ureia 10% exceto entre os dedos). Contraindicar andar descalço.";
+
+            if (feridaAtiva) {
+                grauRisco = 3;
+                nivelClass = "danger";
+                tituloRisco = "⚠️ Risco 3 — ÚLCERA ATIVA / EMERGÊNCIA DE PÉ DIABÉTICO";
+                revisao = "Avaliação Médica IMEDIATA (mesmo dia)";
+                conduta = "ENCAMINHAMENTO MÉDICO URGENTE na USF. Realizar curativo estéril seco e proteção de descarga. Classificar na escala de Wagner/San Elian. Emitir Parecer de Matriciamento. Se sinais sistêmicos de sepse/infecção profunda, acionar regulação de urgência.";
+            } else if (historiaPrevia) {
+                grauRisco = 3;
+                nivelClass = "danger";
+                tituloRisco = "Risco 3 — Muito Alto Risco (Histórico Prévio de Úlcera ou Amputação)";
+                revisao = "A cada 1 a 2 meses";
+                conduta = "Acompanhamento intensivo e frequente na USF. Exame detalhado de calçados (solado rígido e palmilhas de alívio). Avaliação periódica com a equipe eMulti/Enfermagem e vigilância de novos pontos de atrito.";
+            } else if ((monofilamentoAlterado && pulsosAusentes) || (monofilamentoAlterado && deformidade) || (pulsosAusentes && deformidade)) {
+                grauRisco = 2;
+                nivelClass = "danger";
+                tituloRisco = "Risco 2 — Alto Risco (Neuropatia + DAP e/ou Deformidades Estruturais)";
+                revisao = "A cada 1 a 3 meses";
+                conduta = "Risco elevado de lesão. Indicar calçados especiais para diabéticos (sem costuras internas, bico largo). Prescrição de palmilhas de redistribuição de carga. Inspeção diária rigorosa pelo paciente ou cuidador. Orientar procurar a USF imediatamente se notar bolha, calo escurecido ou vermelhidão.";
+            } else if (monofilamentoAlterado || pulsosAusentes) {
+                grauRisco = 1;
+                nivelClass = "warning";
+                tituloRisco = "Risco 1 — Risco Moderado (Perda de Sensibilidade Protetora OU DAP Isolada)";
+                revisao = "A cada 3 a 6 meses";
+                conduta = "Rastrear claudicação intermitente ou queimação noturna. Reforçar exame físico regular dos pés na farmácia e enfermagem. Ensinar técnica de autoexame com espelho para inspecionar a planta dos pés. Prescrever hidratante para evitar fissuras.";
+            }
+
+            let badgeColor = "#10b981";
+            if (nivelClass === "warning") badgeColor = "#f59e0b";
+            if (nivelClass === "danger") badgeColor = "#ef4444";
+
+            const summaryText = `[AVALIAÇÃO DO PÉ DIABÉTICO — IWGDF / SBD 2024]
+• Classificação: ${tituloRisco} (Grau IWGDF ${grauRisco})
+• Periodicidade Recomendada de Revisão: ${revisao}
+• Achados Clínicos:
+  - Ferida ativa: ${feridaAtiva ? 'SIM (Alerta)' : 'Não'}
+  - Histórico de úlcera/amputação: ${historiaPrevia ? 'SIM' : 'Não'}
+  - Monofilamento 10g: ${monofilamentoAlterado ? 'ALTERADO (Perda de Sensibilidade Protetora)' : 'Preservado (4/4 pontos)'}
+  - Pulsos periféricos: ${pulsosAusentes ? 'AUSENTES / REDUZIDOS (Suspeita DAP)' : 'Presentes/amplos'}
+  - Deformidades ósseas: ${deformidade ? 'PRESENTES' : 'Ausentes'}
+• Conduta Proposta: ${conduta}
+• Códigos e-SUS: CIAP-2 T89 (Complicação de Diabetes) | SIGTAP 01.01.01.003-6`;
+
+            if (containerResultPe) {
+                containerResultPe.style.display = "block";
+                containerResultPe.innerHTML = `
+                    <div style="background: var(--bg-primary); border: 2px solid ${badgeColor}; border-radius: var(--radius-md); padding: 14px; margin-top: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <strong style="color: ${badgeColor}; font-size: 14px;">${tituloRisco}</strong>
+                            <span style="font-size: 11px; font-weight: 700; background: ${badgeColor}20; color: ${badgeColor}; padding: 2px 8px; border-radius: 4px;">IWGDF Grau ${grauRisco}</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">
+                            <strong>Periodicidade de Revisão:</strong> <span style="color: var(--text-primary); font-weight: 700;">${revisao}</span>
+                        </div>
+                        <div style="font-size: 11.5px; background: var(--bg-tertiary); padding: 8px 10px; border-radius: 6px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px;">
+                            <strong>Conduta Farmacêutica na APS:</strong> ${conduta}
+                        </div>
+                        <div style="font-size: 10.5px; color: var(--text-tertiary); margin-bottom: 10px;">
+                            <strong>e-SUS PEC:</strong> Procedimento SIGTAP 01.01.01.003-6 · CIAP-2 T89
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary btn-sm" type="button" style="flex: 1;" onclick="window.copyToClipboardText('${summaryText.replace(/'/g, "\\'").replace(/\n/g, '\\n')}', this)">
+                                <i data-lucide="copy" style="width: 13px; height: 13px;"></i> Copiar
+                            </button>
+                            <button class="btn btn-primary btn-sm" type="button" style="flex: 1;" onclick="window.sendResultToSOAP('${summaryText.replace(/'/g, "\\'").replace(/\n/g, '\\n')}')">
+                                <i data-lucide="file-text" style="width: 13px; height: 13px;"></i> Inserir no SOAP
+                            </button>
+                        </div>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+            }
+
+            addCalcToHistory("Pé Diabético (IWGDF)", `Grau ${grauRisco} (${tituloRisco.split('—')[0].trim()})`, summaryText);
+        });
+    }
+
+    if (btnLimparPe) {
+        btnLimparPe.addEventListener("click", () => {
+            if (containerResultPe) containerResultPe.style.display = "none";
+        });
+    }
+
+    // -------------------------------------------------------------
+    // 12. CALCULADORA: TRANSIÇÃO DE INSULINA (NPH → GLARGINA U-100)
+    // -------------------------------------------------------------
+    const btnCalcularGlargina = document.getElementById("btn-calcular-glargina");
+    const btnLimparGlargina = document.getElementById("btn-limpar-glargina");
+    const containerResultGlargina = document.getElementById("glargina-result-container");
+    const selectEsquemaGlargina = document.getElementById("calc-glargina-esquema");
+    const wrapManhaGlargina = document.getElementById("calc-glargina-wrap-manha");
+
+    if (selectEsquemaGlargina && wrapManhaGlargina) {
+        selectEsquemaGlargina.addEventListener("change", () => {
+            if (selectEsquemaGlargina.value === "1dose") {
+                wrapManhaGlargina.style.display = "none";
+            } else {
+                wrapManhaGlargina.style.display = "block";
+            }
+        });
+    }
+
+    if (btnCalcularGlargina) {
+        btnCalcularGlargina.addEventListener("click", () => {
+            const esquema = selectEsquemaGlargina ? selectEsquemaGlargina.value : "2doses";
+            const doseManha = esquema === "2doses" ? (parseFloat(document.getElementById("calc-glargina-nph-manha")?.value) || 0) : 0;
+            const doseNoite = parseFloat(document.getElementById("calc-glargina-nph-noite")?.value) || 0;
+            const glicemiaJejum = parseFloat(document.getElementById("calc-glargina-glicemia-jejum")?.value) || null;
+
+            if (doseNoite <= 0 && doseManha <= 0) {
+                alert("Por favor, informe a dose de Insulina NPH atual.");
+                return;
+            }
+
+            const totalNph = doseManha + doseNoite;
+            let doseInicialGlargina = 0;
+            let explicacaoConversao = "";
+
+            if (esquema === "1dose") {
+                doseInicialGlargina = doseNoite;
+                explicacaoConversao = `Conversão direta 1:1 da dose noturna de NPH (${doseNoite} UI). Manter ${doseInicialGlargina} UI de Glargina ao deitar em horário fixo.`;
+            } else {
+                doseInicialGlargina = Math.round(totalNph * 0.8);
+                explicacaoConversao = `Redução preventiva de 20% da dose total diária de NPH (${totalNph} UI total [${doseManha} manhã + ${doseNoite} noite] × 0,8 = ${doseInicialGlargina} UI de Glargina). A redução é preconizada pelas Diretrizes SBD para prevenir hipoglicemia pela ausência de pico da Glargina.`;
+            }
+
+            let orientacaoTitulação = "Meta de Glicemia de Jejum: 80 a 130 mg/dL. Titular +2 UI a cada 3 dias se jejum persistir > 130 mg/dL. Reduzir -2 UI se jejum < 80 mg/dL.";
+            let statusJejumBadge = "";
+
+            if (glicemiaJejum !== null && !isNaN(glicemiaJejum)) {
+                if (glicemiaJejum < 70) {
+                    orientacaoTitulação = `⚠️ Glicemia de jejum em faixa de hipoglicemia (${glicemiaJejum} mg/dL). REDUZIR 2 a 4 UI da dose calculada (iniciar com ${Math.max(4, doseInicialGlargina - 2)} UI) e investigar episódios noturnos.`;
+                    statusJejumBadge = `<span style="color: #ef4444; font-weight: 700;">Jejum ${glicemiaJejum} mg/dL: Hipoglicemia</span>`;
+                } else if (glicemiaJejum < 80) {
+                    orientacaoTitulação = `Jejum no limite inferior (${glicemiaJejum} mg/dL). Iniciar com ${doseInicialGlargina} UI e monitorar por 3 dias antes de qualquer aumento.`;
+                    statusJejumBadge = `<span style="color: #f59e0b; font-weight: 700;">Jejum ${glicemiaJejum} mg/dL: Limite Inferior</span>`;
+                } else if (glicemiaJejum <= 130) {
+                    orientacaoTitulação = `Jejum dentro da meta terapêutica (${glicemiaJejum} mg/dL). Manter a dose inicial de ${doseInicialGlargina} UI ao deitar.`;
+                    statusJejumBadge = `<span style="color: #10b981; font-weight: 700;">Jejum ${glicemiaJejum} mg/dL: Dentro da Meta (80-130)</span>`;
+                } else {
+                    orientacaoTitulação = `Jejum acima da meta (${glicemiaJejum} mg/dL). Iniciar com ${doseInicialGlargina} UI ao deitar e aplicar o algoritmo Treat-to-Target: se persistir > 130 mg/dL após 3 dias, titular +2 UI.`;
+                    statusJejumBadge = `<span style="color: #0284c7; font-weight: 700;">Jejum ${glicemiaJejum} mg/dL: Acima da Meta</span>`;
+                }
+            }
+
+            const summaryText = `[TRANSIÇÃO DE INSULINA: NPH → GLARGINA U-100 — SBD 2024]
+• Esquema NPH Prévio: ${esquema === '1dose' ? `1 dose noturna de ${doseNoite} UI` : `2 doses diárias (Manhã: ${doseManha} UI | Noite: ${doseNoite} UI — Total: ${totalNph} UI)`}
+• DOSE INICIAL DE GLARGINA U-100: ${doseInicialGlargina} UI em DOSE ÚNICA AO DEITAR (bedtime)
+• Justificativa da Conversão: ${explicacaoConversao}
+• Algoritmo de Titulação (Treat-to-Target): ${orientacaoTitulação}
+• Orientações Essenciais de Segurança:
+  1. Solução cristalina límpida: NÃO HOMOGENEIZAR (diferente da NPH leitosa).
+  2. NUNCA misturar com outras insulinas na mesma seringa.
+  3. Aplicar em horário fixo todo dia (preferência 21h-22h).
+  4. Rodízio obrigatório de locais de aplicação (prevenir lipodistrofia).
+  5. Armazenamento: Geladeira 2-8°C (lacrado); ambiente <30°C por até 28 dias (aberto).
+• CEAF / Alto Custo: Fornecimento mediante Laudo LME e protocolo estadual.`;
+
+            if (containerResultGlargina) {
+                containerResultGlargina.style.display = "block";
+                containerResultGlargina.innerHTML = `
+                    <div style="background: var(--bg-primary); border: 2px solid #0284c7; border-radius: var(--radius-md); padding: 14px; margin-top: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <div>
+                                <span style="font-size: 10px; font-weight: 800; color: #0284c7; text-transform: uppercase;">Dose Inicial Recomendada</span>
+                                <h3 style="font-size: 20px; font-weight: 800; color: #0284c7; margin: 2px 0 0 0;">${doseInicialGlargina} UI <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">ao deitar (Dose Única)</span></h3>
+                            </div>
+                            <span style="font-size: 11px; font-weight: 700; background: rgba(2, 132, 199, 0.15); color: #0284c7; padding: 4px 8px; border-radius: 4px;">Glargina U-100</span>
+                        </div>
+                        <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.4;">
+                            ${explicacaoConversao}
+                        </div>
+                        ${statusJejumBadge ? `<div style="font-size: 11.5px; margin-bottom: 6px;">${statusJejumBadge}</div>` : ''}
+                        <div style="background: var(--bg-tertiary); padding: 8px 10px; border-radius: 6px; font-size: 11px; color: var(--text-secondary); line-height: 1.45; margin-bottom: 10px;">
+                            <strong>Titulação Treat-to-Target:</strong> ${orientacaoTitulação}
+                        </div>
+                        <div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; padding: 6px 10px; border-radius: 4px; font-size: 11px; color: #92400e; margin-bottom: 10px;">
+                            ⚠️ <strong>Atenção:</strong> Solução transparente — <strong>NÃO homogeneizar</strong>. NÃO misturar na mesma seringa.
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary btn-sm" type="button" style="flex: 1;" onclick="window.copyToClipboardText('${summaryText.replace(/'/g, "\\'").replace(/\n/g, '\\n')}', this)">
+                                <i data-lucide="copy" style="width: 13px; height: 13px;"></i> Copiar
+                            </button>
+                            <button class="btn btn-primary btn-sm" type="button" style="flex: 1; background: #0284c7; border-color: #0284c7;" onclick="window.sendResultToSOAP('${summaryText.replace(/'/g, "\\'").replace(/\n/g, '\\n')}')">
+                                <i data-lucide="file-text" style="width: 13px; height: 13px;"></i> Inserir no SOAP
+                            </button>
+                        </div>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+            }
+
+            addCalcToHistory("Transição NPH → Glargina", `${doseInicialGlargina} UI/dia (de ${totalNph} UI NPH)`, summaryText);
+        });
+    }
+
+    if (btnLimparGlargina) {
+        btnLimparGlargina.addEventListener("click", () => {
+            if (containerResultGlargina) containerResultGlargina.style.display = "none";
+        });
+    }
 }
 
 // -------------------------------------------------------------

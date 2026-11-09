@@ -253,6 +253,16 @@ const MEDICAMENTOS = [
     monitoramento: ["Glicemia capilar diária", "HbA1c trimestral", "Sinais de hipoglicemia", "Locais de aplicação"], beersCriteria: false
   },
   {
+    id: "insulina_glargina", nome: "Insulina Glargina U-100 (Análogo de Longa Ação)", classe: "Hipoglicemiante Injetável / Análogo de Insulina de Ação Prolongada",
+    indicacoes: "DM1 e DM2 que necessitam de insulinização basal com menor risco de hipoglicemia noturna comparado à NPH. Indicada na transição da NPH quando há: hipoglicemia noturna recorrente, fenômeno do alvorecer, variabilidade glicêmica intensa ou dificuldade com 2 aplicações diárias de NPH.",
+    posologia: "DM2 iniciando insulina: 10 UI ao deitar ou 0,1-0,2 UI/kg em dose única. Conversão de NPH 1 dose: mesma dose (1:1) ao deitar. Conversão de NPH 2 doses: 80% da dose total diária de NPH em dose única. Titulação: aumentar ou reduzir 2 UI a cada 3 dias conforme glicemia de jejum (meta 80-130 mg/dL — algoritmo TREAT-TO-TARGET).",
+    contraindicacoes: "Hipoglicemia ativa. Hipersensibilidade à insulina glargina ou excipientes. NÃO misturar com outras insulinas na mesma seringa (precipitação do composto altera a absorção).",
+    orientacoes: "TRANSPARENTE — NÃO homogeneizar (diferente da NPH leitosa). Aplicar em dose única em horário fixo diário (preferencialmente ao deitar). Rodízio obrigatório dos locais de aplicação (abdômen, coxas, braços). Armazenar em geladeira 2-8°C (frasco lacrado); após aberto, usar em até 28 dias em temperatura ambiente (< 30°C). Alertar: cada seringa ou caneta é de uso exclusivo e individual.",
+    alertaSUS: "Disponível pelo Componente Especializado da Assistência Farmacêutica (CEAF/RENAME Componente Especializado) — requer laudo médico e Processo Administrativo na Farmácia de Alto Custo da Secretaria de Saúde.", remumeCG: "Componente Especializado / CEAF — retirada na Farmácia Especializada da SESAU/MS",
+    posologiaVisual: { manha: "0", tarde: "0", noite: "Conforme prescrição (dose única ao deitar)", obs: "NÃO homogeneizar — solução cristalina transparente" },
+    monitoramento: ["Glicemia de jejum diária (meta 80-130 mg/dL)", "HbA1c a cada 3 meses", "Episódios de hipoglicemia (< 70 mg/dL)", "Peso corporal", "Locais de aplicação (lipodistrofia)"], beersCriteria: false
+  },
+  {
     id: "levotiroxina", nome: "Levotiroxina Sódica", classe: "Hormônio Tireoidiano / Reposição T4",
     indicacoes: "Hipotireoidismo primário e secundário, supressão de TSH em câncer diferenciado de tireoide pós-cirurgia.",
     posologia: "Adultos: iniciar 25-50 mcg/dia (idosos: 12,5-25 mcg/dia). Ajustar a cada 4-6 semanas conforme TSH. Dose usual: 75-150 mcg/dia.",

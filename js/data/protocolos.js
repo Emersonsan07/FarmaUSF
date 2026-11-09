@@ -65,6 +65,24 @@ const PROTOCOLOS = [
     metas: "Garantir a resolutividade das ações de saúde, promover o uso racional de medicamentos e qualificar a prescrição e dispensação.",
     primeiraLinha: "Método Clínico Dader ou Método de SOAP para registro das consultas farmacêuticas em prontuário eletrônico integrado (e-SUS).",
     linkOficial: "https://bvsms.saude.gov.br/"
+  },
+  {
+    id: "pe_diabetico",
+    titulo: "Avaliação e Classificação do Pé Diabético — IWGDF / SBD 2024",
+    categoria: "Endócrino / Complicações do Diabetes",
+    resumo: "Protocolo de rastreamento sistemático de neuropatia periférica, doença arterial periférica (DAP) e estratificação do risco de ulceração e amputação em pacientes diabéticos, fundamentado nas Diretrizes Internacionais do Grupo de Trabalho sobre Pé Diabético (IWGDF) e da Sociedade Brasileira de Diabetes (SBD).",
+    metas: "Detectar precocemente perda de sensibilidade protetora (PSP) e DAP; estratificar o risco IWGDF; prevenir ulcerações e amputações; orientar autocuidado preventivo.",
+    primeiraLinha: "Avaliação anual com monofilamento 10g e diapasão 128 Hz. Educação em saúde sobre inspeção diária dos pés, calçado adequado e cuidado com as unhas. Controle glicêmico rigoroso (HbA1c < 7%).",
+    linkOficial: "https://iwgdfguidelines.org/"
+  },
+  {
+    id: "transicao_nph_glargina",
+    titulo: "Transição da Insulina NPH para Insulina Glargina (Análogo de Longa Ação) — SBD 2024",
+    categoria: "Endócrino / Insulinoterapia",
+    resumo: "Protocolo farmacêutico para orientar a conversão segura da Insulina NPH (intermediária) para a Insulina Glargina U-100 (análogo de longa ação sem pico), indicado em casos de hipoglicemia noturna de repetição, grande variabilidade glicêmica ou controle subótimo com NPH em 2 aplicações. Baseado nas Diretrizes da SBD 2024 e Protocolos do Ministério da Saúde.",
+    metas: "Reduzir eventos hipoglicêmicos noturnos e ao amanhecer; melhorar controle glicêmico de jejum; simplificar o esquema de aplicação (1x/dia); minimizar ganho de peso.",
+    primeiraLinha: "Iniciar Glargina na dose equivalente a 80% da dose total diária de NPH (se NPH em 2 aplicações) ou 100% (se NPH apenas ao deitar). Ajustar conforme glicemia de jejum com o algoritmo de titulação TREAT-TO-TARGET.",
+    linkOficial: "https://diretriz.diabetes.org.br/"
   }
 ];
 
@@ -418,6 +436,176 @@ const FLUXOGRAMAS = {
         tipo: "success",
         titulo: "Infeção Viral de Vias Aéreas Superiores (IVAS / Faringite Viral)",
         conduta: "CONTRAINDICADO USO DE ANTIBIÓTICOS. Prescrever sintomáticos: Dipirona 500mg-1g de 6/6h ou Paracetamol 500mg de 6/6h + soro fisiológico nasal e repouso."
+      }
+    }
+  },
+
+  pe_diabetico: {
+    titulo: "Avaliação do Pé Diabético — Rastreamento e Estratificação de Risco (IWGDF/SBD)",
+    passos: {
+      inicio: {
+        pergunta: "O paciente tem diagnóstico de Diabetes Mellitus (DM1 ou DM2) há mais de 5 anos, ou com DM2 de qualquer duração e mau controle glicêmico (HbA1c > 7,5%) ou outros fatores de risco?",
+        opcoes: [
+          { texto: "Sim — Realizar avaliação completa do pé", proximo: "inspecao_visual" },
+          { texto: "Não — Rastreamento anual de rotina", proximo: "rastreamento_rotina" }
+        ]
+      },
+      rastreamento_rotina: {
+        final: true,
+        tipo: "success",
+        titulo: "Rastreamento Anual do Pé Diabético (Risco Baixo)",
+        conduta: "Realizar avaliação completa dos pés a cada 12 meses: inspeção visual, monofilamento 10g e palpação de pulsos. Reforçar educação em saúde: inspeção diária dos pés pelo paciente, calçado fechado adequado, hidratação da pele, corte correto das unhas. Registrar CIAP-2: T89."
+      },
+      inspecao_visual: {
+        pergunta: "Na inspeção visual (com calçado retirado), há presença de: úlcera ativa, ferida aberta, necrose, gangrena, rubor persistente ou edema intenso?",
+        opcoes: [
+          { texto: "Sim — Lesão Ativa Identificada", proximo: "lesao_ativa" },
+          { texto: "Não — Continuar avaliação", proximo: "deformidades" }
+        ]
+      },
+      lesao_ativa: {
+        final: true,
+        tipo: "danger",
+        titulo: "⚠️ Lesão Ativa no Pé Diabético — Encaminhamento Urgente",
+        conduta: "ENCAMINHAR IMEDIATAMENTE ao médico da equipe eSF. Emitir Parecer de Matriciamento urgente. Classificar pela Escala de Wagner: Grau 1 (úlcera superficial) a Grau 5 (gangrena extensa). NÃO realizar desbridamento sem treinamento específico. Enquanto aguarda, cobrir a lesão com curativo estéril seco, elevar o membro e orientar descarga total de peso. Código SIGTAP 01.01.01.003-6 e CIAP-2 T89."
+      },
+      deformidades: {
+        pergunta: "Há presença de deformidades clinicamente relevantes? (Hálux valgo, dedos em garra/martelo, proeminências ósseas, pé de Charcot, amputação prévia ou calosidades de alto risco)",
+        opcoes: [
+          { texto: "Sim", proximo: "monofilamento_com_deformidade" },
+          { texto: "Não", proximo: "monofilamento_sem_deformidade" }
+        ]
+      },
+      monofilamento_com_deformidade: {
+        pergunta: "Avaliação com Monofilamento 10g (4 pontos plantares, olhos fechados): O paciente FALHOU em 2 ou mais pontos (não sentiu o toque)?",
+        opcoes: [
+          { texto: "Sim — Perda de sensibilidade protetora + deformidade", proximo: "alto_risco" },
+          { texto: "Não — Sensibilidade preservada", proximo: "pulsos_com_deformidade" }
+        ]
+      },
+      pulsos_com_deformidade: {
+        pergunta: "Os pulsos periféricos (pediosos e tibial posterior) estão AUSENTES ou fortemente diminuídos em pelo menos um dos pés?",
+        opcoes: [
+          { texto: "Sim — Suspeita de DAP + deformidade", proximo: "alto_risco" },
+          { texto: "Não — Pulsos presentes", proximo: "risco_moderado_deformidade" }
+        ]
+      },
+      risco_moderado_deformidade: {
+        final: true,
+        tipo: "warning",
+        titulo: "Risco Moderado a Alto — Deformidade sem Neuropatia/DAP (IWGDF Risco 2)",
+        conduta: "Revisar a cada 1 a 3 meses. Encaminhar para podólogo (quando disponível na rede) para avaliação de órteses, palmilhas de descarga e cuidado especial com calosidades. Reforçar uso de calçado extra-largo ou ortopédico. Orientar inspeção diária e hidratação. Registrar CIAP-2 T89 + SIGTAP 01.01.01.003-6."
+      },
+      monofilamento_sem_deformidade: {
+        pergunta: "Avaliação com Monofilamento 10g (4 pontos plantares, olhos fechados): O paciente FALHOU em 2 ou mais pontos (não sentiu o toque)?",
+        opcoes: [
+          { texto: "Sim — Perda de sensibilidade protetora", proximo: "avaliar_dap" },
+          { texto: "Não — Sem neuropatia detectada", proximo: "sem_risco_adicional" }
+        ]
+      },
+      sem_risco_adicional: {
+        final: true,
+        tipo: "success",
+        titulo: "Baixo Risco (IWGDF Risco 0) — Pé Diabético sem Alterações",
+        conduta: "Risco baixo. Manter acompanhamento anual. Reforçar educação em saúde: inspeção diária dos pés, hidratação da pele com ureia 10% (exceto entre os dedos), calçado fechado sem costuras internas, corte das unhas reto sem arredondar bordas. CONTRAINDICAR: andar descalço, bolsas de água quente, remoção caseira de calos. Meta HbA1c < 7%."
+      },
+      avaliar_dap: {
+        pergunta: "Os pulsos periféricos (pediosos e tibial posterior) estão AUSENTES ou fortemente diminuídos?",
+        opcoes: [
+          { texto: "Sim — Neuropatia + DAP suspeita (IWGDF Risco 3)", proximo: "alto_risco" },
+          { texto: "Não — Neuropatia isolada (IWGDF Risco 1)", proximo: "risco_moderado_neuropatia" }
+        ]
+      },
+      risco_moderado_neuropatia: {
+        final: true,
+        tipo: "warning",
+        titulo: "Risco Moderado — Neuropatia Periférica Sem DAP (IWGDF Risco 1)",
+        conduta: "Revisar a cada 3 a 6 meses. Reforçar educação intensiva sobre inspeção diária dos pés (uso de espelho ou celular), calçado adequado e hidratação da pele. Avaliar controle glicêmico e pressórico. Encaminhar ao médico da equipe para confirmação diagnóstica de neuropatia. Considerar Gabapentina ou Amitriptilina em baixa dose se dor neuropática presente (Parecer de Matriciamento). Registrar CIAP-2 T89."
+      },
+      alto_risco: {
+        final: true,
+        tipo: "danger",
+        titulo: "Alto Risco de Ulceração / Amputação (IWGDF Risco 2 ou 3)",
+        conduta: "ENCAMINHAR ao médico da equipe para avaliação e ao serviço de referência vascular se DAP confirmada. Revisão mensal na farmácia clínica. Reforçar adesão ao controle glicêmico (HbA1c < 7%), anti-hipertensivo e cessação do tabagismo. Checar vacinação antitetânica. Orientar que qualquer pequena ferida, bolha ou vermelhidão deve ser avaliada no mesmo dia na USF. Emitir Parecer de Matriciamento para a equipe médica/cirurgia vascular. Código CIAP-2 T89 + SIGTAP 01.01.01.003-6."
+      }
+    }
+  },
+
+  transicao_nph_glargina: {
+    titulo: "Transição da Insulina NPH para Glargina U-100 — Algoritmo Farmacêutico de Conversão",
+    passos: {
+      inicio: {
+        pergunta: "Qual é a principal indicação clínica para considerar a transição de NPH para Glargina U-100?",
+        opcoes: [
+          { texto: "Hipoglicemia noturna ou ao amanhecer (Fenômeno do Alvorecer) com NPH", proximo: "hipoglicemia_noturna" },
+          { texto: "Variabilidade glicêmica intensa / HbA1c fora da meta apesar de boa adesão", proximo: "variabilidade_glicemica" },
+          { texto: "Dificuldade de adesão ao esquema de 2 aplicações diárias de NPH", proximo: "adesao_multiplas_doses" }
+        ]
+      },
+      hipoglicemia_noturna: {
+        pergunta: "O paciente relata episódios recorrentes de hipoglicemia (< 70 mg/dL) entre 0h e 6h da manhã, confirmados por glicemia capilar ou sintomas clínicos?",
+        opcoes: [
+          { texto: "Sim — Hipoglicemia noturna confirmada", proximo: "calcular_dose_conversao" },
+          { texto: "Não — Hipoglicemia em outros horários", proximo: "revisar_ajuste_nph" }
+        ]
+      },
+      revisar_ajuste_nph: {
+        final: true,
+        tipo: "warning",
+        titulo: "Ajuste Posológico da NPH Antes da Transição",
+        conduta: "Se hipoglicemia em outros horários, revisar a dose atual de NPH: reduzir 10-20% a dose que cobre o período do evento. Orientar sobre: horário correto da aplicação, mistura adequada (homogeneização suave), alimentação regular e ajuste de carboidratos na refeição anterior. Reavaliar em 7-14 dias antes de decidir pela transição para Glargina."
+      },
+      variabilidade_glicemica: {
+        pergunta: "O paciente está em uso de NPH em 2 aplicações (manhã e noite) com HbA1c > 7,5% ou variabilidade glicêmica > 40 mg/dL entre medições de jejum?",
+        opcoes: [
+          { texto: "Sim — Indicação forte para transição", proximo: "calcular_dose_conversao" },
+          { texto: "Não — Avaliar adesão e técnica de aplicação antes", proximo: "avaliar_adesao" }
+        ]
+      },
+      adesao_multiplas_doses: {
+        pergunta: "O paciente confirma que consegue fazer apenas 1 aplicação por dia? A indicação foi discutida com o médico prescritor e está registrada em prontuário?",
+        opcoes: [
+          { texto: "Sim — Decisão compartilhada registrada", proximo: "calcular_dose_conversao" },
+          { texto: "Não — Aguardar discussão com a equipe médica", proximo: "matriciamento_necessario" }
+        ]
+      },
+      matriciamento_necessario: {
+        final: true,
+        tipo: "warning",
+        titulo: "Matriciamento Farmacêutico Necessário",
+        conduta: "A transição de insulinas requer prescrição médica atualizada com o novo medicamento. Emitir Parecer de Matriciamento à equipe médica solicitando avaliação para transição para Glargina U-100, fundamentando com os dados clínicos (HbA1c, registros de hipoglicemia, histórico de adesão). Aguardar nova prescrição antes de orientar a conversão."
+      },
+      avaliar_adesao: {
+        final: true,
+        tipo: "success",
+        titulo: "Otimizar NPH Antes de Considerar Transição",
+        conduta: "Revisar a técnica de aplicação (homogeneização do frasco leitoso por 20 inversões lentas, rodízio dos locais, ângulo correto de 90°). Avaliar se o paciente está homogeneizando corretamente — falha na homogeneização causa variabilidade de até 50% na absorção. Reforçar adesão e alimentação regular. Reavaliar HbA1c em 3 meses."
+      },
+      calcular_dose_conversao: {
+        pergunta: "Qual é o esquema atual de NPH do paciente?",
+        opcoes: [
+          { texto: "NPH apenas ao deitar (bedtime) — 1 aplicação noturna", proximo: "conversao_nph_1_dose" },
+          { texto: "NPH manhã + noite — 2 aplicações diárias", proximo: "conversao_nph_2_doses" }
+        ]
+      },
+      conversao_nph_1_dose: {
+        pergunta: "A dose atual de NPH ao deitar é conhecida e o controle de jejum tem sido satisfatório (glicemia de jejum 80-130 mg/dL na maioria dos dias)?",
+        opcoes: [
+          { texto: "Sim — Converter em dose igual (1:1)", proximo: "orientacao_glargina_igual" },
+          { texto: "Não — Controle de jejum insatisfatório", proximo: "orientacao_glargina_igual" }
+        ]
+      },
+      orientacao_glargina_igual: {
+        final: true,
+        tipo: "success",
+        titulo: "Conversão NPH → Glargina: Dose Igual (1:1) — NPH 1 Aplicação",
+        conduta: "DOSE INICIAL DE GLARGINA: idêntica à dose atual de NPH ao deitar (conversão 1:1). Exemplo: NPH 20 UI ao deitar → Glargina 20 UI ao deitar. HORÁRIO: Glargina pode ser aplicada em qualquer horário fixo do dia, preferencialmente ao deitar para manter o mesmo hábito. TITULAÇÃO: Ajustar 2 UI a cada 3 dias se glicemia de jejum estiver > 130 mg/dL (ALGORITMO TREAT-TO-TARGET). Reduzir 2 UI se glicemia de jejum < 80 mg/dL em 2 dias consecutivos. TÉCNICA: NÃO homogeneizar (Glargina é solução cristalina — não tem precipitado). Rodízio obrigatório de locais. ARMAZENAMENTO: Geladeira 2-8°C (lacrado); temperatura ambiente < 30°C por até 28 dias (após aberto). MONITORAMENTO: Glicemia de jejum diária por 2 semanas, depois 3x/semana. HbA1c em 3 meses."
+      },
+      conversao_nph_2_doses: {
+        final: true,
+        tipo: "warning",
+        titulo: "Conversão NPH → Glargina: Redução de 20% — NPH 2 Aplicações",
+        conduta: "DOSE INICIAL DE GLARGINA: 80% da DOSE TOTAL DIÁRIA de NPH, aplicada em DOSE ÚNICA. Exemplo: NPH 20 UI manhã + 10 UI noite (total = 30 UI) → Glargina 24 UI ao deitar (30 × 0,8 = 24 UI). A redução de 20% é necessária para prevenir hipoglicemia na transição, pois a Glargina não tem pico e sua ação é mais uniforme. TITULAÇÃO ASCENDENTE: Aumentar 2 UI a cada 3 dias se glicemia de jejum persistir > 130 mg/dL. TITULAÇÃO DESCENDENTE: Reduzir 2 UI se glicemia de jejum < 80 mg/dL em 2 dias consecutivos ou em qualquer hipoglicemia < 70 mg/dL. ORIENTAÇÃO ESSENCIAL: Reforçar que a Glargina é TRANSPARENTE (diferente da NPH leitosa) — paciente NÃO deve homogeneizar. Alertar que NÃO pode misturar Glargina com outras insulinas na mesma seringa. MONITORAMENTO: Glicemia capilar diária por 2 semanas e HbA1c em 3 meses."
       }
     }
   }

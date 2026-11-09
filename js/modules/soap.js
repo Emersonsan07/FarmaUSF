@@ -17,6 +17,8 @@ function getDrcEstagio(clCr) {
     if (clCr >= 15) return 'G4 (Diminuição severa)';
     return 'G5 (Falência renal)';
 }
+window.getDrcEstagio = getDrcEstagio;
+
 
 function initSoapSection() {
     const inputNome = document.getElementById("soap-nome");
@@ -1380,6 +1382,105 @@ function initSoapSection() {
         if (window.lucide) lucide.createIcons();
     };
 
+    window.aplicarTemplateSoapPeDiabetico = function () {
+        const selectTipo = document.getElementById("soap-atendimento-tipo");
+        if (selectTipo) {
+            selectTipo.value = "Consulta em USF / Ambulatorial";
+            window.toggleVdfFieldsDisplay();
+        }
+
+        const subText = [
+            "• Queixa Principal: Rastreamento anual e estratificação de risco do Pé Diabético na Atenção Primária.",
+            "• Histórico Clínico: Paciente com diagnóstico de Diabetes Mellitus em acompanhamento de rotina na USF.",
+            "• Sintomas Neuropáticos: Nega dor em queimação, formigamento ou dormência em repouso nos pés (ausência de parestesias).",
+            "• Sintomas Vasculares: Nega dor na panturrilha ao caminhar (ausência de claudicação intermitente).",
+            "• Histórico Prévia de Lesões: Nega histórico prévio de úlceras nos pés ou amputações de dedos/membros.",
+            "• Hábitos de Calçado & Higiene: Relata uso frequente de calçados abertos; corte de unhas realizado no domicílio."
+        ].join("\n");
+
+        const objText = [
+            "• Inspeção Visual: Pele íntegra, sem fissuras graves, sem calosidades com hemorragia e sem úlceras ativas no momento.",
+            "• Teste com Monofilamento 10g (Semmes-Weinstein): Sensibilidade tátil protetora PRESERVADA (sentiu 4/4 pontos testados bilateralmente).",
+            "• Pulsos Periféricos: Artérias pediosa dorsal e tibial posterior com pulsos presentes, amplos e simétricos (+2/+2 bilateralmente).",
+            "• Estratificação de Risco IWGDF / SBD 2024: GRAU 0 — BAIXO RISCO DE ULCERAÇÃO (Sem neuropatia periférica e sem DAP).",
+            "• Procedimento SUS: SIGTAP 01.01.01.003-6 (Consulta Farmacêutica) | CIAP-2: T89 (Complicação de Diabetes)."
+        ].join("\n");
+
+        const avalText = [
+            "• Avaliação Farmacoterapêutica: Paciente diabético com baixo risco de complicação em membros inferiores (IWGDF Risco 0).",
+            "• Sensibilidade protetora e perfusão periférica mantidas. Necessidade de reforço nas orientações educativas de autocuidado preventivo para preservação da integridade cutânea."
+        ].join("\n");
+
+        const planText = [
+            "• 1. Autocuidado dos Pés: Instruir inspeção diária da planta dos pés e espaços interdigitais (usar espelho ou apoio de familiar).",
+            "• 2. Hidratação da Pele: Orientar aplicação diária de creme hidratante com ureia 10% no dorso e calcanhar — NUNCA aplicar entre os dedos.",
+            "• 3. Calçados Adequados: Recomendar sapatos fechados, macios, sem costuras internas proeminentes, com meias de algodão claras.",
+            "• 4. Cuidados com Unhas: Orientar corte reto, sem arredondar os cantos. CONTRAINDICAR expressamente andar descalço e remoção caseira de calos.",
+            "• 5. Periodicidade de Revisão: Nova estratificação de risco do pé em 12 meses (revisão anual), ou retorno imediato se ferida/bolha.",
+            "• 6. Registro e-SUS: Lançar atendimento com código CIAP-2 T89 e SIGTAP 01.01.01.003-6."
+        ].join("\n");
+
+        if (txtS) txtS.value = subText;
+        if (txtO) txtO.value = objText;
+        if (txtA) txtA.value = avalText;
+        if (txtP) txtP.value = planText;
+
+        consolidarParaSoap();
+        updateFormattedText();
+        if (window.showToast) window.showToast("Modelo SOAP de Pé Diabético (IWGDF 2024) aplicado com sucesso!", "success");
+        else alert("Modelo SOAP de Pé Diabético aplicado com sucesso!");
+        if (window.lucide) lucide.createIcons();
+    };
+
+    window.aplicarTemplateSoapGlargina = function () {
+        const selectTipo = document.getElementById("soap-atendimento-tipo");
+        if (selectTipo) {
+            selectTipo.value = "Consulta em USF / Ambulatorial";
+            window.toggleVdfFieldsDisplay();
+        }
+
+        const subText = [
+            "• Queixa Principal: Avaliação farmacêutica para transição de Insulina NPH para Insulina Glargina U-100 (Análogo de Longa Ação).",
+            "• Motivo da Indicação: Paciente relata episódios recorrentes de hipoglicemia noturna / ao amanhecer (< 70 mg/dL) com NPH, além de variabilidade glicêmica de jejum.",
+            "• Dificuldade Posológica: Queixa de dificuldade em manter esquema de 2 aplicações diárias de NPH nos horários corretos.",
+            "• Glicemia Capilar: Registros em diário com oscilações frequentes e glicemias matinais acima da meta desejada."
+        ].join("\n");
+
+        const objText = [
+            "• Esquema Anterior: Insulina NPH Humana (revisada dose total diária prévia).",
+            "• Plano de Conversão de Dose (Diretrizes SBD 2024):",
+            "  - Regra de Conversão: Se NPH em 2 doses diárias, iniciar Glargina com 80% da dose total diária em DOSE ÚNICA AO DEITAR (bedtime).",
+            "  - Se NPH apenas noturna (1 dose), conversão direta 1:1 ao deitar.",
+            "• Meta Glicêmica de Jejum Pactuada: 80 a 130 mg/dL (Algoritmo Treat-to-Target).",
+            "• Ajuste Posológico: Titular +2 UI a cada 3 dias se jejum persistir > 130 mg/dL; reduzir 2 UI se jejum < 80 mg/dL ou hipoglicemia."
+        ].join("\n");
+
+        const avalText = [
+            "• Diagnóstico Farmacoterapêutico: Indicação clínica favorável para substituição de NPH por Insulina Glargina U-100 visando estabilização basal e erradicação de hipoglicemias noturnas.",
+            "• Segurança: Paciente orientado sobre as diferenças críticas entre as insulinas (Glargina é cristalina/transparente e sem pico de ação prolongado)."
+        ].join("\n");
+
+        const planText = [
+            "• 1. Prescrição e CEAF: Elaborado Parecer Técnico e Laudo de Solicitação de Medicamentos do Componente Especializado (CEAF / Alto Custo).",
+            "• 2. NÃO HOMOGENEIZAR: Orientado enfaticamente que a Glargina é límpida/transparente e NÃO deve ser agitada antes da aplicação.",
+            "• 3. NÃO MISTURAR: Contraindicado misturar a Glargina com qualquer outra insulina na mesma seringa (precipitação altera farmacocinética).",
+            "• 4. Horário Fixo: Aplicação 1x ao dia, sempre no mesmo horário (preferência ao deitar entre 21h-22h) com rodízio dos locais (abdômen/coxas).",
+            "• 5. Armazenamento Correto: Frasco lacrado em geladeira (2 a 8°C); em uso em temperatura ambiente (< 30°C) por no máximo 28 dias.",
+            "• 6. Monitoramento: Glicemia capilar de jejum diária nas primeiras 2 semanas para guiar a titulação Treat-to-Target. Retorno agendado em 14 dias."
+        ].join("\n");
+
+        if (txtS) txtS.value = subText;
+        if (txtO) txtO.value = objText;
+        if (txtA) txtA.value = avalText;
+        if (txtP) txtP.value = planText;
+
+        consolidarParaSoap();
+        updateFormattedText();
+        if (window.showToast) window.showToast("Modelo SOAP de Transição para Glargina aplicado com sucesso!", "success");
+        else alert("Modelo SOAP de Transição para Glargina aplicado com sucesso!");
+        if (window.lucide) lucide.createIcons();
+    };
+
     // MODAL PLANO DE AÇÃO DA ASMA
     window.openPlanoAsmaModal = function () {
         const modal = document.getElementById("plano-asma-modal-overlay");
@@ -1485,9 +1586,16 @@ Paciente: ${nome} | Melhor PFE: ${pfe}
         const tipoAtend = document.getElementById("soap-atendimento-tipo")?.value || "Consulta em USF / Ambulatorial";
 
         const finalS = txtS?.value.trim() || "Sem relatos subjetivos registrados.";
-        const finalO = txtO?.value.trim() || "Sem dados objetivos registrados.";
+        let finalO = txtO?.value.trim() || "Sem dados objetivos registrados.";
         const finalA = txtA?.value.trim() || "Sem avaliação clínica registrada.";
         const finalP = txtP?.value.trim() || "Sem plano registrado.";
+
+        const testesRapidosTexto = (typeof window.getTestesRapidosSoapText === "function") ? window.getTestesRapidosSoapText() : "";
+        if (testesRapidosTexto) {
+            finalO += "\n" + testesRapidosTexto;
+        }
+
+        const esusCodigosBloco = (typeof window.getEsusCodigosText === "function") ? window.getEsusCodigosText() : "";
 
         const outputText = `=== CONSULTA FARMACÊUTICA (MÉTODO SOAP) ===
 [IDENTIFICAÇÃO & ATENDIMENTO]
@@ -1505,6 +1613,8 @@ ${finalA}
 
 [P] PLAN (Plano de Cuidado & Intervenções)
 ${finalP}
+
+${esusCodigosBloco}
 ==========================================`;
 
         if (formattedOutput) {

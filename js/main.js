@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof initProtocolsSection === "function") initProtocolsSection();
     if (typeof initCalculatorsSection === "function") initCalculatorsSection();
     if (typeof initFarmClinicaSection === "function") initFarmClinicaSection();
+    if (typeof initEsusDocumentosModule === "function") initEsusDocumentosModule();
+    if (typeof initTestesRapidosModule === "function") initTestesRapidosModule();
     if (window.USFDashboard && typeof window.USFDashboard.initDashboardSection === "function") {
         window.USFDashboard.initDashboardSection();
     }

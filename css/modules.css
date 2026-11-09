@@ -245,3 +245,496 @@ body.dark-theme .hyperlink-card:hover { box-shadow: 0 12px 24px -10px rgba(0, 0,
     100% { transform: rotate(360deg); }
 }
 
+/* ================================================================
+   CALCULADORAS CLÍNICAS — GRID MODERNO, CATEGORIAS & RESULTADOS
+   ================================================================ */
+
+.calc-control-bar {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    box-shadow: var(--shadow-sm);
+}
+
+.calc-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calc-tab-btn:hover {
+    background: var(--bg-primary);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+.calc-tab-btn.active {
+    background: var(--color-primary);
+    color: white !important;
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+}
+
+body.dark-theme .calc-tab-btn.active {
+    background: var(--color-primary);
+    color: white !important;
+}
+
+/* Grid de Calculadoras */
+.calculators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    align-items: stretch;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .calculators-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.calculator-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 22px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    border-top: 4px solid var(--color-primary);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.calculator-card:hover {
+    box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.12), 0 8px 12px -6px rgba(0, 0, 0, 0.05);
+    transform: translateY(-4px);
+    border-color: var(--border-color);
+}
+
+/* Categorias Temáticas */
+.calculator-card.card-cat-renal {
+    border-top-color: #0d9488;
+}
+.calculator-card.card-cat-renal:hover {
+    box-shadow: 0 12px 28px -6px rgba(13, 148, 136, 0.2);
+}
+
+.calculator-card.card-cat-cardio {
+    border-top-color: #f43f5e;
+}
+.calculator-card.card-cat-cardio:hover {
+    box-shadow: 0 12px 28px -6px rgba(244, 63, 94, 0.2);
+}
+
+.calculator-card.card-cat-nutri {
+    border-top-color: #10b981;
+}
+.calculator-card.card-cat-nutri:hover {
+    box-shadow: 0 12px 28px -6px rgba(16, 185, 129, 0.2);
+}
+
+.calculator-card.card-cat-dosing {
+    border-top-color: #8b5cf6;
+}
+.calculator-card.card-cat-dosing:hover {
+    box-shadow: 0 12px 28px -6px rgba(139, 92, 246, 0.2);
+}
+
+.calculator-card.card-cat-resp {
+    border-top-color: #0284c7;
+}
+.calculator-card.card-cat-resp:hover {
+    box-shadow: 0 12px 28px -6px rgba(2, 132, 199, 0.2);
+}
+
+.calc-card-badge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.badge-cat {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 9px;
+    border-radius: var(--radius-full);
+    background: rgba(13, 148, 136, 0.12);
+    color: var(--color-primary);
+    white-space: nowrap;
+}
+
+.card-cat-cardio .badge-cat {
+    background: rgba(244, 63, 94, 0.12);
+    color: #f43f5e;
+}
+
+.card-cat-nutri .badge-cat {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.card-cat-dosing .badge-cat {
+    background: rgba(139, 92, 246, 0.12);
+    color: #8b5cf6;
+}
+
+.card-cat-resp .badge-cat {
+    background: rgba(2, 132, 199, 0.12);
+    color: #0284c7;
+}
+
+.calc-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.calc-header h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.calc-header i {
+    width: 18px;
+    height: 18px;
+    padding: 7px;
+    box-sizing: content-box;
+    border-radius: var(--radius-md);
+    background: rgba(13, 148, 136, 0.1);
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.card-cat-cardio .calc-header i {
+    background: rgba(244, 63, 94, 0.1);
+    color: #f43f5e;
+}
+
+.card-cat-nutri .calc-header i {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.card-cat-dosing .calc-header i {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.card-cat-resp .calc-header i {
+    background: rgba(2, 132, 199, 0.1);
+    color: #0284c7;
+}
+
+.calculator-card .subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    min-height: 34px;
+    margin-bottom: 14px;
+}
+
+.calc-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.form-group.flex-2 {
+    grid-column: span 2;
+}
+
+/* Inputs com Unidades Integradas */
+.input-unit-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-unit-wrapper input,
+.input-unit-wrapper select {
+    width: 100%;
+    padding-right: 52px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 8px 52px 8px 10px;
+    font-size: 13px;
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.input-unit-wrapper input:focus,
+.input-unit-wrapper select:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.input-unit-wrapper .unit-tag {
+    position: absolute;
+    right: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    background: var(--bg-tertiary);
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Checkbox Tiles Interativos */
+.calc-checkbox-tile {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-tertiary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.calc-checkbox-tile:hover {
+    border-color: var(--color-primary);
+    background-color: var(--bg-primary);
+}
+
+.calc-checkbox-tile.checked {
+    border-color: var(--color-primary);
+    background-color: rgba(13, 148, 136, 0.08);
+    box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+.card-cat-cardio .calc-checkbox-tile.checked {
+    border-color: #f43f5e;
+    background-color: rgba(244, 63, 94, 0.08);
+    box-shadow: inset 0 0 0 1px #f43f5e;
+}
+
+.calc-checkbox-tile input[type="checkbox"] {
+    margin-top: 2px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.card-cat-cardio .calc-checkbox-tile input[type="checkbox"] {
+    accent-color: #f43f5e;
+}
+
+.calc-checkbox-tile label {
+    font-size: 12px;
+    cursor: pointer;
+    line-height: 1.35;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.calc-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 14px;
+}
+
+.calc-actions .btn {
+    flex: 1;
+    justify-content: center;
+}
+
+/* Resultados das Calculadoras */
+.calc-result {
+    margin-top: 14px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 14px;
+    animation: fadeIn 0.25s ease;
+}
+
+.result-box-inner {
+    padding: 14px;
+    border-radius: var(--radius-md);
+    background-color: var(--bg-tertiary);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.result-box-inner h4 {
+    font-size: 13px;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.result-box-inner .val-highlight {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--color-primary);
+    line-height: 1.2;
+}
+
+.result-box-inner p.classification {
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Indicadores de DRC & IMC */
+.drc-stage-pills {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.drc-pill {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-color);
+}
+
+.drc-pill.active {
+    border-color: currentColor;
+    font-weight: 800;
+}
+
+.drc-pill.active.g1 {
+    background: rgba(5, 150, 105, 0.15);
+    color: var(--success-color);
+}
+
+.drc-pill.active.g2 {
+    background: rgba(13, 148, 136, 0.15);
+    color: var(--color-primary);
+}
+
+.drc-pill.active.g3a,
+.drc-pill.active.g3b {
+    background: rgba(234, 88, 12, 0.15);
+    color: var(--warning-color);
+}
+
+.drc-pill.active.g4,
+.drc-pill.active.g5 {
+    background: rgba(225, 29, 72, 0.15);
+    color: var(--danger-color);
+}
+
+.imc-gauge-container {
+    margin: 10px 0 6px 0;
+}
+
+.imc-gauge-bar {
+    height: 8px;
+    width: 100%;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, #38bdf8 0%, #10b981 30%, #f59e0b 65%, #ef4444 100%);
+    position: relative;
+}
+
+.imc-gauge-pin {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid var(--text-primary);
+    position: absolute;
+    top: -9px;
+    transform: translateX(-50%);
+    transition: left 0.3s ease;
+}
+
+.imc-gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    margin-top: 4px;
+    color: var(--text-tertiary);
+}
+
+.calc-alert {
+    display: flex;
+    gap: 8px;
+    background-color: var(--warning-bg);
+    border-left: 4px solid var(--warning-color);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+}
+
+.calc-alert i {
+    color: var(--warning-color);
+    flex-shrink: 0;
+}
+
+.calc-result-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-color);
+}
+
+/* Histórico de Cálculos */
+.calc-history-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+}
+
+.calc-history-item {
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transition);
+}
+
+.calc-history-item:hover {
+    border-color: var(--color-primary);
+    transform: translateX(2px);
+}
+
+
